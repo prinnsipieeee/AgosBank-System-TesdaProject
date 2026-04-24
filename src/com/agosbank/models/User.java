@@ -8,14 +8,13 @@ public class User {
     private String pinCode;
     private double balance;
 
-    public User(int id, String fullName, String accountId, String PhoneNumber, String pinCode, double balance, String phoneNumber){
+    public User(int id, String fullName, String accountId, String phoneNumber, String pinCode, double balance) {
         this.id = id;
         this.fullName = fullName;
         this.accountId = accountId;
         this.phoneNumber = phoneNumber;
         this.pinCode = pinCode;
         this.balance = balance;
-
     }
 
     public User() {
