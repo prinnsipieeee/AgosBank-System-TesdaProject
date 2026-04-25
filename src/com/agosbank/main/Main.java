@@ -2,11 +2,13 @@ package com.agosbank.main;
 
 import com.agosbank.models.User;
 import com.agosbank.services.AuthService;
+import com.agosbank.services.TransactionService;
 import java.util.Scanner;
 
 public class Main {
-    private static Scanner scanner = new Scanner(System.in);
-    private static AuthService authService = new AuthService();
+    private static final Scanner sc = new Scanner(System.in);
+    private static final AuthService as = new AuthService();
+    private static final  TransactionService ts = new TransactionService();
     private static User currentUser = null;
 
     public static void main(String[] args) {
@@ -28,21 +30,16 @@ public class Main {
         System.out.println("[3] Exit");
         System.out.print("\nChoose an option: ");
         
-        String choice = scanner.nextLine();
+        String choice = sc.nextLine();
 
         switch (choice) {
-            case "1":
-                handleLogin();
-                break;
-            case "2":
-                handleRegister();
-                break;
-            case "3":
+            case "1" -> handleLogin();
+            case "2" -> handleRegister();
+            case "3" -> {
                 System.out.println("Thank you for using AgosBank. Goodbye!");
                 System.exit(0);
-                break;
-            default:
-                System.out.println("Invalid option. Try again.");
+            }
+            default -> System.out.println("Invalid option. Try again.");
         }
     }
 
@@ -61,32 +58,27 @@ public class Main {
         System.out.println("[5] Logout");
         System.out.print("\nChoose an option: ");
 
-        String choice = scanner.nextLine();
+        String choice = sc.nextLine();
 
         switch (choice) {
-            case "1":
-                System.out.println("Feature coming soon: Cash In");
-                break;
-            case "2":
-                System.out.println("Feature coming soon: Send Money");
-                break;
-            case "5":
+            case "1" -> handleCashin();
+            case "2" -> handleSendMoney();
+            case "5" -> {
                 currentUser = null;
                 System.out.println("Logged out successfully.");
-                break;
-            default:
-                System.out.println("ption not available yet.");
+            }
+            default -> System.out.println("ption not available yet.");
         }
     }
 
     private static void handleLogin() {
         System.out.println("\n--- LOGIN ---");
         System.out.print("Enter Phone Number: ");
-        String phone = scanner.nextLine();
+        String phone = sc.nextLine();
         System.out.print("Enter 4-digit PIN: ");
-        String pin = scanner.nextLine();
+        String pin = sc.nextLine();
 
-        currentUser = authService.loginUser(phone, pin);
+        currentUser = as.loginUser(phone, pin);
 
         if (currentUser != null) {
             System.out.println("Login Successful!");
@@ -98,16 +90,16 @@ public class Main {
     private static void handleRegister() {
         System.out.println("\n--- CREATE ACCOUNT ---");
         System.out.print("Full Name: ");
-        String name = scanner.nextLine();
+        String name = sc.nextLine();
         System.out.print("Phone Number: ");
-        String phone = scanner.nextLine();
+        String phone = sc.nextLine();
         System.out.print("Create 4-digit PIN: ");
-        String pin = scanner.nextLine();
+        String pin = sc.nextLine();
         
         // Randomly generate an Account ID (Agos Style)
         String accId = "AGOS-" + (int)(Math.random() * 9000 + 1000);
 
-        boolean success = authService.registerUser(name, accId, phone, pin);
+        boolean success = as.registerUser(name, accId, phone, pin);
 
         if (success) {
             System.out.println("Account Created! Your ID is: " + accId);
@@ -115,4 +107,49 @@ public class Main {
             System.out.println("Registration failed. Make sure PIN is 4 digits.");
         }
     }
+
+    private static void handleCashin() {
+        System.out.println("\n--- CASH IN ---");
+        System.out.print("Enter amount to deposit: ");
+        double amount = Double.parseDouble(sc.nextLine());
+
+        if (amount <= 0) {
+            System.out.println("Invalid amount.");
+            return;
+        }
+
+        boolean success = ts.deposit(currentUser.getId(), amount);
+
+        if (success) {
+            // I-update natin ang balance ng currentUser object para reflect agad sa UI
+            currentUser.setBalance(currentUser.getBalance() + amount);
+            System.out.println("Cash In Successful! New Balance: ₱" + currentUser.getBalance());
+        } else {
+            System.out.println("Cash In Failed. Please try again.");
+        }
+    }
+
+    private static void handleSendMoney() {
+    System.out.println("\n--- SEND MONEY ---");
+    System.out.print("Enter Receiver Account ID (e.g., AGOS-1234): ");
+    String receiverId = sc.nextLine();
+    
+    System.out.print("Enter amount to send: ");
+    double amount = Double.parseDouble(sc.nextLine());
+
+    if (amount <= 0) {
+        System.out.println("Invalid amount.");
+        return;
+    }
+
+    boolean success = ts.sendMoney(currentUser.getId(), receiverId, amount);
+
+    if (success) {
+        // I-update ang balance sa local object para reflect agad sa UI
+        currentUser.setBalance(currentUser.getBalance() - amount);
+        System.out.println("Transfer Successful! Your new balance: " + currentUser.getBalance());
+    } else {
+        System.out.println("Transfer Failed. Check receiver ID or your balance.");
+    }
+}
 }
