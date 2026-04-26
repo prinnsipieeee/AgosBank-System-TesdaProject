@@ -67,7 +67,7 @@ public class Main {
                 currentUser = null;
                 System.out.println("Logged out successfully.");
             }
-            default -> System.out.println("ption not available yet.");
+            default -> System.out.println("Option not available yet.");
         }
     }
 

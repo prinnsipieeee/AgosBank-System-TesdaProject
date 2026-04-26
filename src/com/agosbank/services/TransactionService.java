@@ -15,7 +15,7 @@ public class TransactionService{
             PreparedStatement logstmt = conn.prepareStatement(logTransactionSQL)){
             
             updstmt.setDouble(1, amount);
-            updstmt.setDouble(2, amount);
+            updstmt.setInt(2, userId);
             updstmt.executeUpdate();
 
             logstmt.setDouble(1, amount);
