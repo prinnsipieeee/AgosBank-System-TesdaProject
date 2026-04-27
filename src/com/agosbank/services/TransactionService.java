@@ -4,6 +4,7 @@ import com.agosbank.database.DBConnection;
 import java.sql.*;;
 
 public class TransactionService{
+
     public boolean deposit(int userId, double amount){
         String updateBalanceSQL = "UPDATE users SET balance = balance + ? WHERE id=?";
         String logTransactionSQL = "INSERT INTO transaction (amount, transaction_type, account_id) VALUE (?, 'CASH IN', ?)";
@@ -81,5 +82,72 @@ public class TransactionService{
             System.out.println("Connection Error: " + e.getMessage());
             return true; 
         }
+    }
+
+    public void showHistory(int userId){
+        String sql = "SELECT * FROM transaction WHERE account_id = ? ORDER BY date DESC";
+
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            
+            pstmt.setInt(1, userId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            System.out.println("\n========= 🧾 TRANSACTION HISTORY =========");
+            System.out.printf("%-15s | %-12s | %-20s\n", "TYPE", "AMOUNT", "DATE");
+            System.out.println("------------------------------------------");
+
+            boolean hasTransactions = false;
+            while(rs.next()){
+                hasTransactions = true;
+                String type = rs.getString("transaction_type");
+                double amount = rs.getDouble("amount");
+                String date = rs.getString("date");
+
+                System.out.printf("%-15s | ₱%-11.2f | %-20s\n", type, amount, date);
+            }
+            if(!hasTransactions){
+                System.out.println("No transaction found yet. ");
+            }
+            System.out.println("===================================\n");
+        } catch(SQLException e){
+            System.out.println("History Error: " + e.getMessage());
+        }
+    }
+
+    public boolean withdraw(int userId, double amount){
+        String updateSQL = "UPDATE users SET balance = balance - ? WHERE id = ? AND BALANCE >= ?";
+        String logSQL = "INSERT INTO transaction (amount, transaction_type, account_id) VALUES (?, 'WITHDRAW', ?)";
+
+        try(Connection conn = DBConnection.getConnection()){
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement updatestmt = conn.prepareStatement(updateSQL);
+                PreparedStatement logstmt = conn.prepareStatement(logSQL)) {
+                
+                updatestmt.setDouble(1, amount);
+                updatestmt.setInt(2, userId);
+                updatestmt.setDouble(3, amount);
+                int affected = updatestmt.executeUpdate();
+
+                if(affected == 0){
+                    throw new SQLException("Insuficcient Balance or User not Found.");
+                }
+
+                logstmt.setDouble(1, amount);
+                logstmt.setInt(2, userId);
+                logstmt.executeUpdate();
+
+                conn.commit();
+                return true;
+            } catch (SQLException e){
+                conn.rollback();
+                System.out.println("Connection Error: " + e.getMessage());
+                return false;
+            } 
+        } catch (SQLException e){
+                System.out.println("Connection Error: " + e.getMessage());
+        } return false;
     }
 }

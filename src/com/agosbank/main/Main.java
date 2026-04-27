@@ -53,8 +53,8 @@ public class Main {
         System.out.println("----------------------------------");
         System.out.println("[1] Cash In");
         System.out.println("[2] Send Money");
-        System.out.println("[3] Transaction History");
-        System.out.println("[4] Notifications");
+        System.out.println("[3] Withdraw");
+        System.out.println("[4] Transaction History");
         System.out.println("[5] Logout");
         System.out.print("\nChoose an option: ");
 
@@ -63,6 +63,8 @@ public class Main {
         switch (choice) {
             case "1" -> handleCashin();
             case "2" -> handleSendMoney();
+            case "3" -> handleWithdraw();
+            case "4" -> ts.showHistory(currentUser.getId());
             case "5" -> {
                 currentUser = null;
                 System.out.println("Logged out successfully.");
@@ -130,26 +132,46 @@ public class Main {
     }
 
     private static void handleSendMoney() {
-    System.out.println("\n--- SEND MONEY ---");
-    System.out.print("Enter Receiver Account ID (e.g., AGOS-1234): ");
-    String receiverId = sc.nextLine();
-    
-    System.out.print("Enter amount to send: ");
-    double amount = Double.parseDouble(sc.nextLine());
+        System.out.println("\n--- SEND MONEY ---");
+        System.out.print("Enter Receiver Account ID (e.g., AGOS-1234): ");
+        String receiverId = sc.nextLine();
+        
+        System.out.print("Enter amount to send: ");
+        double amount = Double.parseDouble(sc.nextLine());
 
-    if (amount <= 0) {
-        System.out.println("Invalid amount.");
-        return;
+        if (amount <= 0) {
+            System.out.println("Invalid amount.");
+            return;
+        }
+
+        boolean success = ts.sendMoney(currentUser.getId(), receiverId, amount);
+
+        if (success) {
+            // I-update ang balance sa local object para reflect agad sa UI
+            currentUser.setBalance(currentUser.getBalance() - amount);
+            System.out.println("Transfer Successful! Your new balance: " + currentUser.getBalance());
+        } else {
+            System.out.println("Transfer Failed. Check receiver ID or your balance.");
+        }
     }
 
-    boolean success = ts.sendMoney(currentUser.getId(), receiverId, amount);
+    private static void handleWithdraw() {
+        System.out.println("\n--- 🏧 WITHDRAW ---");
+        System.out.print("Enter amount to withdraw: ₱");
+        double amount = Double.parseDouble(sc.nextLine());
 
-    if (success) {
-        // I-update ang balance sa local object para reflect agad sa UI
-        currentUser.setBalance(currentUser.getBalance() - amount);
-        System.out.println("Transfer Successful! Your new balance: " + currentUser.getBalance());
-    } else {
-        System.out.println("Transfer Failed. Check receiver ID or your balance.");
+        if (amount <= 0) {
+            System.out.println("❌ Invalid amount.");
+            return;
+        }
+
+        boolean success = ts.withdraw(currentUser.getId(), amount);
+
+        if (success) {
+            currentUser.setBalance(currentUser.getBalance() - amount);
+            System.out.println("✅ Please take your cash. New Balance: ₱" + currentUser.getBalance());
+        } else {
+            System.out.println("❌ Withdraw Failed. Check your balance.");
+        }
     }
-}
 }
