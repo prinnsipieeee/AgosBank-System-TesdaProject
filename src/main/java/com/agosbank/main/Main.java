@@ -1,9 +1,9 @@
 package com.agosbank.main;
 
+import java.util.Scanner;
 import com.agosbank.models.User;
 import com.agosbank.services.AuthService;
 import com.agosbank.services.TransactionService;
-import java.util.Scanner;
 
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
@@ -80,7 +80,7 @@ public class Main {
         System.out.print("Enter 4-digit PIN: ");
         String pin = sc.nextLine();
 
-        currentUser = as.loginUser(phone, pin);
+        currentUser = (User) as.loginUser(phone, pin);
 
         if (currentUser != null) {
             System.out.println("Login Successful!");

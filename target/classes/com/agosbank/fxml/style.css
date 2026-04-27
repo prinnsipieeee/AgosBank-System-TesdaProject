@@ -1,0 +1,23 @@
+.root {
+    -fx-font-family: "Segoe UI", Tahoma, sans-serif;
+    -fx-background-color: #0f172a;
+
+}
+
+.text-field, .password-field {
+    -fx-background-radius: 10;
+    -fx-padding: 12;
+    -fx-font-size: 14px;
+}
+
+.button {
+    -fx-background-color: #98ff98; /* Mint Green */
+    -fx-text-fill: #004d4d;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #76e076;
+}

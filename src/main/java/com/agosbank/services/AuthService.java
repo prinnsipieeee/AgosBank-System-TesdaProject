@@ -1,21 +1,36 @@
 package com.agosbank.services;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import com.agosbank.database.DBConnection;
 import com.agosbank.models.User;
-import java.sql.*;
-
 
 public class AuthService{
+    private Connection getConnection() throws SQLException {
+        String url = System.getenv("DB_URL");
+        String user = System.getenv("DB_USER");
+        String password = System.getenv("DB_PASS");
+
+        if (url == null || url.isBlank()) {
+            throw new SQLException("Database URL not configured. Set DB_URL environment variable.");
+        }
+
+        return DriverManager.getConnection(url, user, password);
+    }
+
     public boolean registerUser(String fullName, String accountId, String phoneNumber, String pinCode) {
         
         if (pinCode.length() != 4) {
-        System.out.println("❌ Registration Failed: PIN must be exactly 4 digits.");
-        return false;
-
+            System.out.println("Registration Failed: PIN must be exactly 4 digits.");
+            return false;
         }
         String sql = "INSERT INTO users (full_name, account_id, phone_number, pin_code, balance) VALUES (?, ?, ?, ?, 0.00)";
         
-        try(Connection conn = DBConnection.getConnection();
+        try(Connection conn = getConnection();
             PreparedStatement p = conn.prepareStatement(sql)){
                 
             p.setString(1, fullName);
@@ -34,8 +49,11 @@ public class AuthService{
     public User loginUser(String phoneNumber, String pinCode){
         String sql = "SELECT * FROM USERS WHERE phone_number = ? AND pin_code = ?";
 
+        System.out.println("DEBUG: Connecting to Database...");
+
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement p = conn.prepareStatement(sql)){
+                System.out.println("DEBUG: Connection Success!");
 
                 p.setString(1, phoneNumber);
                 p.setString(2, pinCode);
