@@ -1,23 +1,164 @@
+/* Ang Main Container (AnchorPane o VBox) */
 .root {
-    -fx-font-family: "Segoe UI", Tahoma, sans-serif;
-    -fx-background-color: #0f172a;
-
+    -fx-background-color: #0a0e14; /* Dark blue background gaya ng Figma */
 }
 
-.text-field, .password-field {
-    -fx-background-radius: 10;
-    -fx-padding: 12;
-    -fx-font-size: 14px;
+/* Styling para sa "Log In" Title */
+.login-header {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", Arial;
 }
 
+.password-field {
+    -fx-background-color: transparent !important;
+    -fx-background-insets: 0;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #5e6268;
+    -fx-hgrow: always;
+}
+
+/* Para siguradong hindi mag-white background pag-click */
+.password-field:focused {
+    -fx-background-color: transparent !important;
+}
+
+/* Ang TextFields at PasswordFields */
+.text-field {
+    -fx-background-color: #1a1f26;
+    -fx-background-radius: 12; /* Rounded corners */
+    -fx-border-radius: 12;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #5e6268;
+    -fx-padding: 12 15; /* Para lumaki ang input box */
+    -fx-pref-width: 250;
+}
+
+/* Ang Login Button */
 .button {
-    -fx-background-color: #98ff98; /* Mint Green */
-    -fx-text-fill: #004d4d;
-    -fx-background-radius: 20;
+    -fx-background-color: #00D094;
+    -fx-background-radius: 12;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+
+    -fx-pref-height: 40;      /* Ito ang standard height para sa mobile-friendly look */
+    -fx-pref-width: 250;       /* Hindi sagad sa gilid, saktong pang-login button lang */
+    -fx-font-size: 15px;       /* Clean at professional na laki ng font */
+    -fx-padding: 0 20;
+}
+
+.button:hover {
+    -fx-background-color: #2c3e50; /* Magbabago ng kulay pag hinover */
+}
+
+#logotext {
+    -fx-text-fill: #00D094; /* O kung anong kulay ang nasa Figma mo */
+    -fx-font-size: 35px;
+    -fx-font-weight: bold;
+    -fx-font-family: "System"; /* Pwede mong palitan ng "Arial" o "Segoe UI" */
+}
+
+#logotexts {
+     -fx-text-fill: #e7eced; /* O kung anong kulay ang nasa Figma mo */
+    -fx-font-size: 50px;
+    -fx-font-weight: bold;
+    -fx-font-family: "System";
+}
+
+.welcome {
+    -fx-text-fill: white;
+    -fx-font-family: "Times New Roman";
+    -fx-font-size: 30px;
+    -ms-flex-align: center;
+    
+}
+
+/* Ang HBox na nagsisilbing "Box" ng input */
+.input-group {
+    -fx-background-color: #1a1f26; /* Dark background gaya ng Figma */
+    -fx-background-radius: 12;
+    -fx-border-color: #2c3e50;    /* Manipis na border para sa detail */
+    -fx-border-radius: 12;
+    -fx-pref-height: 50;          /* Saktong taas para sa mobile look */
+    -fx-max-width: 350;
+}
+
+/* Kapag naka-focus (clinic) ang box, mag-iiba ang border color */
+.input-group:focused-within {
+    -fx-border-color: #00D094; 
+    -fx-effect: dropshadow(three-pass-box, rgba(0,208,148,0.2), 5, 0, 0, 0);
+}
+
+/* Ang TextField sa loob - GAGAWING TRANSPARENT */
+.input-group .text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #5e6268;
+    -fx-font-size: 14px;
+    -fx-padding: 0; /* Alisin ang internal padding */
+}
+
+.input-field, .password-field {
+    -fx-background-color: transparent !important; /* Piliting maging transparent */
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #5e6268;
+    -fx-font-size: 14px;
+    -fx-hgrow: always;
+    -fx-padding: 0 0 0 10;
+}
+
+.input-group .image-view {    /* Binabaan ko pa para maging "muted white" gaya ng sa Figma */
+    -fx-opacity: 0.7;             /* "Muted white/grey" gaya ng goal */
+    -fx-preserve-ratio: true;
+    
+    /* PILITIN ANG SIZE - BAWASAN NANG 50% */
+    -fx-fit-height: 18px !important;    /* Sleek size, hindi bulk */
+    -fx-fit-width: 18px !important;
+}
+
+.input-group:focused-within .image-view {
+    -fx-opacity: 0.9 !important;       /* Titindi ang kulay pag active na yung field */
+}
+
+.enter {
+    -fx-font-size: 12;
+    -fx-text-fill: white;
+    -fx-font-family: "Times New Roman";
+    -fx-text-weight: bold;
+}
+
+/* Ang mismong floating card */
+#errorCard {
+    -fx-background-color: #1e232c; 
+    -fx-background-radius: 15;
+    -fx-border-color: #ff4d4d;
+    -fx-border-radius: 15;
+    -fx-border-width: 2;
+    
+    /* Ito ang magpapakitang lutang siya */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);
+}
+
+/* Ang text sa loob */
+#errorMessageLabel {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* Ang "Try Again" button sa loob ng card */
+#errorCard .button {
+    -fx-background-color: #ff4d4d;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
     -fx-font-weight: bold;
     -fx-cursor: hand;
 }
 
-.button:hover {
-    -fx-background-color: #76e076;
+#errorCard .button:hover {
+    -fx-background-color: #ff6666; /* Mas maliwanag pag ni-hover */
 }

@@ -1,54 +1,92 @@
 package com.agosbank.main;
 
 import com.agosbank.models.User;
-import com.agosbank.services.AuthService; // I-import natin para malinis tingnan
+import com.agosbank.services.AuthService;
 
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class LoginController {
 
     @FXML
-    private TextField usernameField;
+    private TextField usernameField; 
 
     @FXML
     private PasswordField passwordField;
 
-    private AuthService authService = new AuthService();
+    @FXML 
+    private VBox errorCard; // Ang overlay card natin
+
+    @FXML 
+    private Label errorMessageLabel; // Ang text sa loob ng card
+
+    private final AuthService authService = new AuthService();
     
     @FXML
     public void initialize() {
-        // Ito ay tatakbo kapag nag-load ang window.
         System.out.println("DEBUG: LoginController initialized!");
+        
+        // Siguraduhing tago ang error card sa simula
+        if (errorCard != null) {
+            errorCard.setVisible(false);
+            errorCard.setOpacity(0);
+        }
     }
 
     @FXML
     private void handleLogin() {
-        // CHECK 1: Kung null ba ang mga fields (Wiring check)
-        if (usernameField == null || passwordField == null) {
-            System.err.println("CRITICAL ERROR: UI Fields are NULL! Check fx:id in Scene Builder.");
-            return;
+    String user = usernameField.getText().trim();
+    String pass = passwordField.getText().trim();
+
+    // 1. Check kung may laman
+    if (user.isEmpty() || pass.isEmpty()) {
+        showError("Authentication required. Please enter your phone number and PIN.");
+        return;
+    }
+
+    try {
+        User loggedInUser = authService.loginUser(user, pass);
+
+        if (loggedInUser != null) {
+            // SUCCESS: Pwedeng palitan ang kulay ng card or diretso Dashboard
+            System.out.println("Login Success!"); 
+        } else {
+            // FAILURE: Heto ang maglalagay ng message sa Label
+            showError("Authentication failed. Please verify your phone number and PIN.");
         }
+    } catch (Exception e) {
+        showError("Database Error: Check mo kung naka-ON ang XAMPP.");
+    }
+    }
 
-        String user = usernameField.getText();
-        String pass = passwordField.getText();
+    private void showError(String message) {
+    errorMessageLabel.setText(message);
+    
+    // Gawin nating visible at managed ulit
+    errorCard.setVisible(true);
+    errorCard.setManaged(true); 
+    
+    // IMPORTANTE: Dalhin sa pinaka-harap at siguraduhing hindi transparent sa mouse
+    errorCard.toFront(); 
+    errorCard.setMouseTransparent(false); 
+    
+    // Animation
+    FadeTransition ft = new FadeTransition(Duration.millis(300), errorCard);
+    ft.setFromValue(0.0);
+    ft.setToValue(1.0);
+    ft.play();
+    }
 
-        System.out.println("DEBUG: Attempting login for: " + user);
-
-        try {
-            // CHECK 2: Tawagin ang AuthService
-            User loggedInUser = authService.loginUser(user, pass);
-
-            if (loggedInUser != null) {
-                System.out.println("SUCCESS: Welcome, " + loggedInUser.getFullName());
-                // TODO: Transition to Dashboard
-            } else {
-                System.out.println("FAILED: Invalid Phone Number or PIN.");
-            }
-        } catch (Exception e) {
-            System.err.println("DATABASE ERROR: May problema sa koneksyon!");
-            e.printStackTrace();
-        }
+    @FXML
+    private void closeErrorCard() {
+        System.out.println("DEBUG: Close button clicked!"); // Para makita sa terminal kung gumagana
+        errorCard.setVisible(false);
+        errorCard.setManaged(false);
+        errorCard.setMouseTransparent(true); // Gawing "ghost" ulit para ma-click yung login button
     }
 }

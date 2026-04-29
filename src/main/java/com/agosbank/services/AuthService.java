@@ -30,7 +30,7 @@ public class AuthService{
         }
         String sql = "INSERT INTO users (full_name, account_id, phone_number, pin_code, balance) VALUES (?, ?, ?, ?, 0.00)";
         
-        try(Connection conn = getConnection();
+        try(Connection conn = DBConnection.getConnection();
             PreparedStatement p = conn.prepareStatement(sql)){
                 
             p.setString(1, fullName);
