@@ -1,14 +1,22 @@
 package com.agosbank.main;
 
+import java.io.IOException;
+
 import com.agosbank.models.User;
 import com.agosbank.services.AuthService;
 
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class LoginController {
@@ -17,7 +25,16 @@ public class LoginController {
     private TextField usernameField; 
 
     @FXML
+    private Hyperlink createAccountLink;
+
+    @FXML
     private PasswordField passwordField;
+
+    @FXML
+    private TextField visiblePasswordField;
+
+    @FXML 
+    private ImageView eyeIcon;
 
     @FXML 
     private VBox errorCard; // Ang overlay card natin
@@ -88,5 +105,33 @@ public class LoginController {
         errorCard.setVisible(false);
         errorCard.setManaged(false);
         errorCard.setMouseTransparent(true); // Gawing "ghost" ulit para ma-click yung login button
+    }
+
+    @FXML
+    private void handleCreateAccount() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/agosbank/fxml/register.fxml"));
+            Stage stage = (Stage) createAccountLink.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void togglePasswordVisibility() {
+        if (passwordField.isVisible()) {
+            // Ipakita ang text
+            visiblePasswordField.setText(passwordField.getText());
+            visiblePasswordField.setVisible(true);
+            passwordField.setVisible(false);
+            // Dito mo rin pwedeng palitan yung icon ng "Eye Close"
+        } else {
+            // Itago ang text
+            passwordField.setText(visiblePasswordField.getText());
+            passwordField.setVisible(true);
+            visiblePasswordField.setVisible(false);
+            // Ibalik sa "Eye Open" icon
+        }
     }
 }

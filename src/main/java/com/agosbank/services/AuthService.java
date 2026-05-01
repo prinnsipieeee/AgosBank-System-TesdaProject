@@ -22,13 +22,37 @@ public class AuthService{
         return DriverManager.getConnection(url, user, password);
     }
 
-    public boolean registerUser(String fullName, String accountId, String phoneNumber, String pinCode) {
-        
-        if (pinCode.length() != 4) {
-            System.out.println("Registration Failed: PIN must be exactly 4 digits.");
+    public boolean isAccountExists(String mobile, String email) {
+        String checkSql = "SELECT count(*) FROM users WHERE phone_number = ? OR email = ?";
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(checkSql)){
+            
+            pstmt.setString(1, mobile);
+            pstmt.setString(2, email);
+
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                return rs.getInt(1) > 0;
+                }
+            } catch (SQLException e){
+                e.printStackTrace();
+            } 
             return false;
         }
-        String sql = "INSERT INTO users (full_name, account_id, phone_number, pin_code, balance) VALUES (?, ?, ?, ?, 0.00)";
+
+    public boolean registerUser(String fullName, String accountId, String phoneNumber, String email, String pinCode) {
+        
+        if (pinCode == null || pinCode.length() != 4) {
+        System.out.println("Registration Failed: PIN must be exactly 4 digits.");
+            return false;
+        }
+
+        if (isAccountExists(phoneNumber, email)){
+            System.out.println("Registration Failed: Mobile or Email already in use.");
+            return false;
+        }
+
+        String sql = "INSERT INTO users (full_name, account_id, phone_number, email, pin_code, balance) VALUES (?, ?, ?, ?, ?, 0.00)";
         
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement p = conn.prepareStatement(sql)){
@@ -36,7 +60,8 @@ public class AuthService{
             p.setString(1, fullName);
             p.setString(2, accountId);
             p.setString(3, phoneNumber);
-            p.setString(4, pinCode);
+            p.setString(4, email);
+            p.setString(5, pinCode);
 
             int rowsInserted = p.executeUpdate();
             return rowsInserted > 0;

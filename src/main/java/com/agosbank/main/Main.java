@@ -1,6 +1,7 @@
 package com.agosbank.main;
 
 import java.util.Scanner;
+
 import com.agosbank.models.User;
 import com.agosbank.services.AuthService;
 import com.agosbank.services.TransactionService;
@@ -95,18 +96,18 @@ public class Main {
         String name = sc.nextLine();
         System.out.print("Phone Number: ");
         String phone = sc.nextLine();
+        System.out.print("Email Address: ");
+        String email = sc.nextLine();
         System.out.print("Create 4-digit PIN: ");
         String pin = sc.nextLine();
         
         // Randomly generate an Account ID (Agos Style)
         String accId = "AGOS-" + (int)(Math.random() * 9000 + 1000);
 
-        boolean success = as.registerUser(name, accId, phone, pin);
+        boolean success = as.registerUser(name, accId, phone, email, pin);
 
         if (success) {
             System.out.println("Account Created! Your ID is: " + accId);
-        } else {
-            System.out.println("Registration failed. Make sure PIN is 4 digits.");
         }
     }
 
