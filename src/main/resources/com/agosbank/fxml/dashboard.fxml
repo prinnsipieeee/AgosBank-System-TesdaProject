@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="360.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agosbank.main.DashboardController">
+   <children>
+      <AnchorPane prefHeight="200.0" prefWidth="360.0" styleClass="dashboard-bg" stylesheets="@style.css">
+         <children>
+            <Label layoutX="204.0" layoutY="67.0" prefHeight="45.0" prefWidth="91.0" styleClass="dashboard-texts" text="BANK" textFill="WHITE" />
+            <Label layoutX="118.0" layoutY="67.0" prefHeight="29.0" prefWidth="115.0" styleClass="dashboard-text" stylesheets="@style.css" text="AGOS" textFill="WHITE" />
+            <ImageView fitHeight="76.0" fitWidth="83.0" layoutX="49.0" layoutY="47.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../assets/logo.png" />
+               </image>
+            </ImageView>
+            <VBox alignment="CENTER" layoutX="12.0" maxWidth="350.0" prefHeight="588.0" prefWidth="337.0" spacing="25.0">
+               <children>
+                  <HBox prefHeight="50.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fitHeight="41.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../assets/profile.png" />
+                           </image>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </ImageView>
+                        <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="225.0" spacing="15.0">
+                           <children>
+                              <Label fx:id="greetingLabel" prefHeight="17.0" prefWidth="200.0" styleClass="greeting-label-up" text="Label" textFill="WHITE">
+                                 <HBox.margin>
+                                    <Insets bottom="25.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                           <HBox.margin>
+                              <Insets left="10.0" top="12.0" />
+                           </HBox.margin>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="20.0" />
+                     </VBox.margin>
+                     <padding>
+                        <Insets left="-25.0" />
+                     </padding>
+                  </HBox>
+                  <VBox alignment="TOP_CENTER" prefHeight="175.0" prefWidth="287.0" styleClass="balance-card" stylesheets="@style.css" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label prefHeight="0.0" prefWidth="219.0" styleClass="balance-amount" stylesheets="@style.css" text="Available Balance">
+                           <VBox.margin>
+                              <Insets right="60.0" />
+                           </VBox.margin>
+                        </Label>
+                        <ImageView fx:id="toggleIcon" fitHeight="33.0" fitWidth="29.0" onMouseClicked="#toggleBalanceVisibility" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../assets/eye-black-shape.png" />
+                           </image>
+                           <VBox.margin>
+                              <Insets left="200.0" top="-24.0" />
+                           </VBox.margin>
+                        </ImageView>
+                        <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="83.0" prefWidth="105.0" spacing="160.0">
+                           <children>
+                              <Label fx:id="balanceLabel" maxWidth="1.7976931348623157E308" minWidth="0.0" prefHeight="202.0" styleClass="balance-label-small" stylesheets="@style.css" text="Label" textFill="WHITE" textOverrun="CLIP" HBox.hgrow="ALWAYS" />
+                           </children>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets top="15.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#handleCashIn" prefHeight="50.0" prefWidth="140.0" styleClass="action-button" stylesheets="@style.css" text="CASH IN">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Button>
+                        <HBox alignment="CENTER" prefHeight="69.0" prefWidth="67.0" />
+                        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" styleClass="action-button" stylesheets="@style.css" text="SEND">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Button>
+                     </children>
+                  </HBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="176.0" text="Transaction History" textFill="WHITE" />
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" styleClass="transaction-scroll" stylesheets="@style.css">
+                           <content>
+                              <VBox prefHeight="200.0" />
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="20.0" left="25.0" right="25.0" top="20.0" />
+               </padding>
+            </VBox>
+            <HBox prefHeight="50.0" prefWidth="200.0" styleClass="bottom-nav" stylesheets="@style.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

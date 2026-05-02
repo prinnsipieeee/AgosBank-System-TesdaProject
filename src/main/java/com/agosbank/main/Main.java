@@ -9,12 +9,12 @@ import com.agosbank.services.TransactionService;
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
     private static final AuthService as = new AuthService();
-    private static final  TransactionService ts = new TransactionService();
-    private static User currentUser = null;
+    private static final TransactionService ts = new TransactionService();
 
     public static void main(String[] args) {
-        while(true){
-            if(currentUser == null){
+        while (true) {
+            // Imbes na currentUser, tinitignan natin kung may accountId sa Session
+            if (UserSession.getAccountId() == null) {
                 showWelcomeMenu();
             } else {
                 showDashboardMenu();
@@ -22,7 +22,7 @@ public class Main {
         }
     }
 
-    private static void showWelcomeMenu(){
+    private static void showWelcomeMenu() {
         System.out.println("\n==================================");
         System.out.println("        AGOSBANK MOBILE       ");
         System.out.println("==================================");
@@ -47,10 +47,10 @@ public class Main {
     private static void showDashboardMenu() {
         System.out.println("\n==================================");
         System.out.println("        AGOSBANK DASHBOARD");
-        System.out.println("    Welcome, " + currentUser.getFullName());
+        System.out.println("    Welcome, " + UserSession.getFullName());
         System.out.println("==================================");
-        System.out.println("Account ID: " + currentUser.getAccountId());
-        System.out.println("Current Balance: ₱" + currentUser.getBalance());
+        System.out.println("Account ID:      " + UserSession.getAccountId());
+        System.out.println("Current Balance: ₱" + String.format("%,.2f", UserSession.getBalance()));
         System.out.println("----------------------------------");
         System.out.println("[1] Cash In");
         System.out.println("[2] Send Money");
@@ -62,12 +62,12 @@ public class Main {
         String choice = sc.nextLine();
 
         switch (choice) {
-            case "1" -> handleCashin();
+            case "1" -> handleCashIn();
             case "2" -> handleSendMoney();
             case "3" -> handleWithdraw();
-            case "4" -> ts.showHistory(currentUser.getId());
+            case "4" -> ts.showHistory(UserSession.getAccountId()); // Gumagamit na ng Account ID
             case "5" -> {
-                currentUser = null;
+                UserSession.cleanUserSession(); // I-reset ang session data
                 System.out.println("Logged out successfully.");
             }
             default -> System.out.println("Option not available yet.");
@@ -81,10 +81,15 @@ public class Main {
         System.out.print("Enter 4-digit PIN: ");
         String pin = sc.nextLine();
 
-        currentUser = (User) as.loginUser(phone, pin);
+        User user = as.loginUser(phone, pin);
 
-        if (currentUser != null) {
-            System.out.println("Login Successful!");
+        if (user != null) {
+            // DITO NA NATIN ILILIPAT SA SESSION ANG DATA MULA SA DATABASE
+            UserSession.setAccountId(user.getAccountId());
+            UserSession.setFullName(user.getFullName());
+            UserSession.setBalance(user.getBalance()); 
+            
+            System.out.println("Login Successful! Welcome back, " + UserSession.getFullName());
         } else {
             System.out.println("Invalid credentials.");
         }
@@ -101,7 +106,6 @@ public class Main {
         System.out.print("Create 4-digit PIN: ");
         String pin = sc.nextLine();
         
-        // Randomly generate an Account ID (Agos Style)
         String accId = "AGOS-" + (int)(Math.random() * 9000 + 1000);
 
         boolean success = as.registerUser(name, accId, phone, email, pin);
@@ -111,8 +115,10 @@ public class Main {
         }
     }
 
-    private static void handleCashin() {
-        System.out.println("\n--- CASH IN ---");
+    private static void handleCashIn() {
+        System.out.print("\nEnter Recipient Account ID: ");
+        String accountId = sc.nextLine();
+
         System.out.print("Enter amount to deposit: ");
         double amount = Double.parseDouble(sc.nextLine());
 
@@ -121,36 +127,41 @@ public class Main {
             return;
         }
 
-        boolean success = ts.deposit(currentUser.getId(), amount);
+        System.out.print("Enter Deposit Source (Fullname): ");
+        String sourceName = sc.nextLine();
+
+        boolean success = ts.deposit(accountId, amount, sourceName);
 
         if (success) {
-            // I-update natin ang balance ng currentUser object para reflect agad sa UI
-            currentUser.setBalance(currentUser.getBalance() + amount);
-            System.out.println("Cash In Successful! New Balance: ₱" + currentUser.getBalance());
+            // I-update lang ang session kung sariling account ang hinulugan
+            if (accountId.equals(UserSession.getAccountId())) {
+                UserSession.setBalance(UserSession.getBalance() + amount);
+            }
+            System.out.println("Cash In Successful! New Balance: ₱" + String.format("%,.2f", UserSession.getBalance()));
         } else {
-            System.out.println("Cash In Failed. Please try again.");
+            System.out.println("Cash In Failed. Please check the Account ID.");
         }
     }
 
     private static void handleSendMoney() {
         System.out.println("\n--- SEND MONEY ---");
-        System.out.print("Enter Receiver Account ID (e.g., AGOS-1234): ");
+        System.out.print("Enter Receiver Account ID: ");
         String receiverId = sc.nextLine();
         
         System.out.print("Enter amount to send: ");
         double amount = Double.parseDouble(sc.nextLine());
 
-        if (amount <= 0) {
-            System.out.println("Invalid amount.");
+        if (amount <= 0 || amount > UserSession.getBalance()) {
+            System.out.println("Invalid amount or insufficient balance.");
             return;
         }
 
-        boolean success = ts.sendMoney(currentUser.getId(), receiverId, amount);
+        // Gamitin ang UserSession.getAccountId() bilang sender
+        boolean success = ts.sendMoney(UserSession.getAccountId(), receiverId, amount);
 
         if (success) {
-            // I-update ang balance sa local object para reflect agad sa UI
-            currentUser.setBalance(currentUser.getBalance() - amount);
-            System.out.println("Transfer Successful! Your new balance: " + currentUser.getBalance());
+            UserSession.setBalance(UserSession.getBalance() - amount);
+            System.out.println("Transfer Successful! New Balance: ₱" + String.format("%,.2f", UserSession.getBalance()));
         } else {
             System.out.println("Transfer Failed. Check receiver ID or your balance.");
         }
@@ -161,18 +172,18 @@ public class Main {
         System.out.print("Enter amount to withdraw: ₱");
         double amount = Double.parseDouble(sc.nextLine());
 
-        if (amount <= 0) {
-            System.out.println("❌ Invalid amount.");
+        if (amount <= 0 || amount > UserSession.getBalance()) {
+            System.out.println("❌ Invalid amount or insufficient balance.");
             return;
         }
 
-        boolean success = ts.withdraw(currentUser.getId(), amount);
+        boolean success = ts.withdraw(UserSession.getAccountId(), amount);
 
         if (success) {
-            currentUser.setBalance(currentUser.getBalance() - amount);
-            System.out.println("✅ Please take your cash. New Balance: ₱" + currentUser.getBalance());
+            UserSession.setBalance(UserSession.getBalance() - amount);
+            System.out.println("✅ Please take your cash. New Balance: ₱" + String.format("%,.2f", UserSession.getBalance()));
         } else {
-            System.out.println("❌ Withdraw Failed. Check your balance.");
+            System.out.println("❌ Withdraw Failed.");
         }
     }
 }

@@ -126,7 +126,7 @@
                   </StackPane>
                </children>
             </VBox>
-            <Button layoutX="55.0" layoutY="572.0" mnemonicParsing="false" onAction="#handleSignUp" text="SIGN UP">
+            <Button layoutX="55.0" layoutY="572.0" mnemonicParsing="false" onAction="#handleSignUp" styleClass="button-cache" text="SIGN UP">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>

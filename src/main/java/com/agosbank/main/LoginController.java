@@ -21,26 +21,13 @@ import javafx.util.Duration;
 
 public class LoginController {
 
-    @FXML
-    private TextField usernameField; 
-
-    @FXML
-    private Hyperlink createAccountLink;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private TextField visiblePasswordField;
-
-    @FXML 
-    private ImageView eyeIcon;
-
-    @FXML 
-    private VBox errorCard; // Ang overlay card natin
-
-    @FXML 
-    private Label errorMessageLabel; // Ang text sa loob ng card
+    @FXML private TextField usernameField; 
+    @FXML private Hyperlink createAccountLink;
+    @FXML private PasswordField passwordField;
+    @FXML private TextField visiblePasswordField;
+    @FXML private ImageView eyeIcon;
+    @FXML private VBox errorCard;
+    @FXML private Label errorMessageLabel;
 
     private final AuthService authService = new AuthService();
     
@@ -48,47 +35,48 @@ public class LoginController {
     public void initialize() {
         System.out.println("DEBUG: LoginController initialized!");
         
-        // Siguraduhing tago ang error card sa simula
         if (errorCard != null) {
             errorCard.setVisible(false);
             errorCard.setOpacity(0);
         }
     }
-
     @FXML
     private void handleLogin() {
-    String user = usernameField.getText().trim();
-    String pass = passwordField.getText().trim();
+        String user = usernameField.getText().trim();
+        String pass = passwordField.getText().trim();
 
-    // 1. Check kung may laman
-    if (user.isEmpty() || pass.isEmpty()) {
-        showError("Authentication required. Please enter your phone number and PIN.");
-        return;
-    }
-
-    try {
-        User loggedInUser = authService.loginUser(user, pass);
-
-        if (loggedInUser != null) {
-            // SUCCESS: Pwedeng palitan ang kulay ng card or diretso Dashboard
-            System.out.println("Login Success!"); 
-        } else {
-            // FAILURE: Heto ang maglalagay ng message sa Label
-            showError("Authentication failed. Please verify your phone number and PIN.");
+        if (user.isEmpty() || pass.isEmpty()) {
+            showError("Authentication required. Please enter your phone number and PIN.");
+            return;
         }
-    } catch (Exception e) {
-        showError("Database Error: Check mo kung naka-ON ang XAMPP.");
-    }
+
+        try {
+            User loggedInUser = authService.loginUser(user, pass);
+
+            if (loggedInUser != null) {
+                UserSession.setFullName(loggedInUser.getFullName());
+                UserSession.setAccountId(String.valueOf(loggedInUser.getAccountId()));
+                UserSession.setBalance(loggedInUser.getBalance());
+
+                System.out.println("Login Success! Welcome, " + UserSession.getFullName());
+
+                navigateToDashboard();
+                
+            } else {
+                showError("Authentication failed. Please verify your phone number and PIN.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Para makita mo ang actual error sa console
+            showError("Database Error: Check mo kung naka-ON ang XAMPP.");
+        }
     }
 
     private void showError(String message) {
     errorMessageLabel.setText(message);
     
-    // Gawin nating visible at managed ulit
     errorCard.setVisible(true);
     errorCard.setManaged(true); 
     
-    // IMPORTANTE: Dalhin sa pinaka-harap at siguraduhing hindi transparent sa mouse
     errorCard.toFront(); 
     errorCard.setMouseTransparent(false); 
     
@@ -101,10 +89,10 @@ public class LoginController {
 
     @FXML
     private void closeErrorCard() {
-        System.out.println("DEBUG: Close button clicked!"); // Para makita sa terminal kung gumagana
+        System.out.println("DEBUG: Close button clicked!");
         errorCard.setVisible(false);
         errorCard.setManaged(false);
-        errorCard.setMouseTransparent(true); // Gawing "ghost" ulit para ma-click yung login button
+        errorCard.setMouseTransparent(true);
     }
 
     @FXML
@@ -121,17 +109,29 @@ public class LoginController {
     @FXML
     private void togglePasswordVisibility() {
         if (passwordField.isVisible()) {
-            // Ipakita ang text
             visiblePasswordField.setText(passwordField.getText());
             visiblePasswordField.setVisible(true);
             passwordField.setVisible(false);
             // Dito mo rin pwedeng palitan yung icon ng "Eye Close"
         } else {
-            // Itago ang text
             passwordField.setText(visiblePasswordField.getText());
             passwordField.setVisible(true);
             visiblePasswordField.setVisible(false);
-            // Ibalik sa "Eye Open" icon
+        }
+    }
+
+    private void navigateToDashboard() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/agosbank/fxml/dashboard.fxml"));
+
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgosBank - Dashboard");
+            stage.show();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Navigation Error: Hindi mahanap ang dashboard.fxml.");
         }
     }
 }

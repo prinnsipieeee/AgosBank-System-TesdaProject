@@ -36,7 +36,7 @@
 }
 
 /* Ang Login Button */
-.button {
+.button-cache {
     -fx-background-color: #00D094;
     -fx-background-radius: 12;
     -fx-text-fill: black;
@@ -50,18 +50,18 @@
     -fx-padding: 0 20;
 }
 
-.button:hover {
+.button-cache:hover {
     -fx-background-color: #2c3e50; /* Magbabago ng kulay pag hinover */
 }
 
-#logotext {
+.logotext {
     -fx-text-fill: #00D094; /* O kung anong kulay ang nasa Figma mo */
     -fx-font-size: 35px;
     -fx-font-weight: bold;
     -fx-font-family: "System"; /* Pwede mong palitan ng "Arial" o "Segoe UI" */
 }
 
-#logotexts {
+.logotexts {
      -fx-text-fill: #e7eced; /* O kung anong kulay ang nasa Figma mo */
     -fx-font-size: 50px;
     -fx-font-weight: bold;
@@ -71,7 +71,7 @@
 .welcome {
     -fx-text-fill: white;
     -fx-font-family: "Times New Roman";
-    -fx-font-size: 30px;
+    -fx-font-size: 20px;
     -ms-flex-align: center;
     
 }
@@ -203,4 +203,125 @@
 #eyeIcon:hover {
     -fx-cursor: hand;
     -fx-opacity: 0.8;
+}
+
+/* Main Background ng Dashboard */
+.dashboard-bg {
+    -fx-background-color: #0c1524; /* Dark Navy Blue base sa Figma */
+}
+
+/* Ang Green Gradient Balance Card */
+.balance-card {
+    -fx-background-color: linear-gradient(to bottom right, #00d9a5, #008a69);
+    -fx-background-radius: 25;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);
+}
+
+/* Styling para sa Labels sa loob ng Card */
+.balance-label-small {
+    -fx-text-fill: #000000;
+    -fx-font-size: 35px;
+    -fx-opacity: 0.8;
+    -fx-font-weight: bold;
+}
+
+.balance-amount {
+    -fx-text-fill: #000000;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Times New Roman";
+}
+
+/* Action Buttons (CASH IN at SEND) */
+.action-button {
+    -fx-background-color: #00d9a5;
+    -fx-background-radius: 30; /* Para maging bilugan gaya ng Figma */
+    -fx-text-fill: #000000;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-font-family: "Times New Roman";
+}
+
+.action-button:hover {
+    -fx-background-color: #00b388;
+}
+
+/* ScrollPane Transparency para sa Transactions */
+.transaction-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent; /* Importante para sa JavaFX */
+}
+
+.transaction-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Bottom Nav Bar Styling */
+.bottom-nav {
+    -fx-background-color: #1a2a40; /* Slightly lighter navy para sa nav bar */
+    -fx-padding: 10;
+}
+
+.dashboard-text {
+      -fx-text-fill: #e7eced; /* O kung anong kulay ang nasa Figma mo */
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-font-family: "System";
+}
+
+.dashboard-texts {
+    -fx-text-fill: #00D094;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-font-family: "System";
+}
+
+.greeting-label-up {
+    -fx-font-size: 15px;
+    -fx-font-family: "Times New Roman";
+}
+
+.cash_in {
+     -fx-text-fill: white;
+    -fx-font-family: "Times New Roman";
+    -fx-font-size: 30px;
+    -ms-flex-align: center;
+}
+
+/* Quick Amount Buttons */
+.quick-amount-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: #00d9a5; /* Emerald Green border */
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-padding: 5 12;
+    -fx-cursor: hand;
+}
+
+.quick-amount-btn:hover {
+    -fx-background-color: #00d9a5; /* Light green tint on hover */
+}
+
+/* Kapag tama ang input */
+.text-field-success {
+    -fx-border-color: #00d9a5 !important;
+    -fx-border-width: 2px !important;
+    -fx-border-radius: 12px;
+}
+
+/* Kapag may mali sa input */
+.text-field-error {
+    -fx-border-color: #ff4d4d !important;
+    -fx-border-width: 2px !important;
+    -fx-border-radius: 12px;
+}
+
+.availableBalanceLabel {
+    -fx-font-weight: bold;
+    -fx-padding: 5 0 15 0;
+    -fx-opacity: 0.9;
 }

@@ -34,10 +34,10 @@
                   <Image url="@../assets/logo.png" />
                </image>
             </ImageView>
-            <Button defaultButton="true" layoutX="57.0" layoutY="521.0" mnemonicParsing="false" onAction="#handleLogin" text="LOGIN" />
-            <Label fx:id="logotexts" layoutX="182.0" layoutY="103.0" prefHeight="54.0" prefWidth="137.0" text="AGOS" textFill="WHITE" />
-            <Label fx:id="welcome" layoutX="58.0" layoutY="232.0" prefHeight="54.0" prefWidth="243.0" styleClass="welcome" stylesheets="@style.css" text="WELCOME BACK" />
-            <Label fx:id="logotext" layoutX="182.0" layoutY="150.0" prefHeight="31.0" prefWidth="137.0" text="BANK" textFill="WHITE" />
+            <Button defaultButton="true" layoutX="57.0" layoutY="521.0" mnemonicParsing="false" onAction="#handleLogin" styleClass="button-cache" text="LOGIN" />
+            <Label fx:id="logotexts" layoutX="182.0" layoutY="103.0" prefHeight="54.0" prefWidth="137.0" styleClass="logotexts" text="AGOS" textFill="WHITE" />
+            <Label fx:id="welcome" layoutX="32.0" layoutY="215.0" prefHeight="73.0" prefWidth="300.0" styleClass="welcome" stylesheets="@style.css" text="BALIK SA AGOS, KA-BANGKO!" textAlignment="CENTER" />
+            <Label fx:id="logotext" layoutX="182.0" layoutY="150.0" prefHeight="31.0" prefWidth="137.0" styleClass="logotext" text="BANK" textFill="WHITE" />
             <HBox alignment="CENTER_LEFT" layoutX="53.0" layoutY="375.0" prefHeight="41.0" prefWidth="257.0" spacing="10.0" styleClass="input-group" stylesheets="@style.css">
                <children>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="input-group-icon" HBox.hgrow="NEVER">

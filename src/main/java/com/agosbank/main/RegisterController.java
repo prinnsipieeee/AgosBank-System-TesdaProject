@@ -30,15 +30,13 @@ public class RegisterController {
 
     private AuthService authService = new AuthService();
 
-
-    // 1. Siguraduhin na ang mga ito ay naka-link sa fx:id sa Scene Builder
     @FXML private VBox errorCard;
     @FXML private Label errorMessageLabel;
     @FXML private Button popup_btn;
 
     @FXML
     private void handleSignUp() {
-        // 1. Sync fields muna para makuha ang tamang value kahit naka-view mode
+
         syncFieldsBeforeSubmit();
 
         String name = nameField.getText().trim();

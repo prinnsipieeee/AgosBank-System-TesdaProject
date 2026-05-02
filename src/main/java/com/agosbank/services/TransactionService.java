@@ -1,42 +1,60 @@
 package com.agosbank.services;
 
-import java.sql.*;
-import com.agosbank.database.DBConnection;;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.agosbank.database.DBConnection;
+;
 
 public class TransactionService{
 
-    public boolean deposit(int userId, double amount){
-        String updateBalanceSQL = "UPDATE users SET balance = balance + ? WHERE id=?";
-        String logTransactionSQL = "INSERT INTO transaction (amount, transaction_type, account_id) VALUE (?, 'CASH IN', ?)";
-
-        try (Connection conn = DBConnection.getConnection()){
-            conn.setAutoCommit(false);
+    public boolean deposit(String accountId, double amount, String sourceName) {
+    // 1. SQL Queries base sa screenshot mo
+    String updateBalanceSQL = "UPDATE users SET balance = balance + ? WHERE account_id = ?";
     
-        try (PreparedStatement updstmt = conn.prepareStatement(updateBalanceSQL);
-            PreparedStatement logstmt = conn.prepareStatement(logTransactionSQL)){
-            
-            updstmt.setDouble(1, amount);
-            updstmt.setInt(2, userId);
-            updstmt.executeUpdate();
+    // Ginagamit ang 'name' para sa source at 'account_ID' para sa recipient
+    String logTransactionSQL = "INSERT INTO transaction (amount, transaction_type, name, account_ID) VALUES (?, 'CASH IN', ?, ?)";
 
-            logstmt.setDouble(1, amount);
-            logstmt.setInt(2, userId);
+    try (Connection conn = DBConnection.getConnection()) {
+        if (conn == null) return false;
+        
+        conn.setAutoCommit(false); 
+
+        try (PreparedStatement updstmt = conn.prepareStatement(updateBalanceSQL);
+             PreparedStatement logstmt = conn.prepareStatement(logTransactionSQL)) {
+            
+            // Step A: Update Balance sa 'users' table
+            updstmt.setDouble(1, amount);
+            updstmt.setString(2, accountId); 
+            int rowsAffected = updstmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                conn.rollback(); 
+                return false; 
+            }
+
+            // Step B: Log the Transaction sa 'transaction' table (Match sa DB mo)
+            logstmt.setDouble(1, amount);           // amount
+            logstmt.setString(2, sourceName);       // name (yung deposit source)
+            logstmt.setString(3, accountId);        // account_ID
             logstmt.executeUpdate();
 
-                conn.commit();
-                return true;
+            conn.commit(); 
+            return true;
 
-            } catch (SQLException e){
-                conn.rollback();
-                System.out.println("Transacton Error: " + e.getMessage());
-            }
-        } catch (SQLException e){
-            System.out.println("Connection Error: " + e.getMessage());
-        } 
-        return false;
-    }
+        } catch (SQLException e) {
+            conn.rollback();
+            System.out.println("Transaction Error: " + e.getMessage());
+        }
+    } catch (SQLException e) {
+        System.out.println("Connection Error: " + e.getMessage());
+    } 
+    return false;
+}
 
-    public boolean sendMoney(int senderId, String receiverAccountId, double amount){
+    public boolean sendMoney(String senderAccId, String receiverAccId, double amount){
         String deductSenderSQL = "UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?";
         String addReceiveSQL = "UPDATE users SET balance = balance + ? WHERE account_id = ?";
         String loginTransactionSQL = "INSERT INTO transaction (amount, transaction_type, account_id, transferTOID, transferFromID) VALUES (?, 'TRANSFER', ?, ?, ?)";
@@ -49,7 +67,7 @@ public class TransactionService{
                 PreparedStatement loginstmt = conn.prepareStatement(loginTransactionSQL)){
                     
                 deductstmt.setDouble(1, amount);
-                deductstmt.setInt(2, senderId);
+                deductstmt.setString(2, senderAccId);
                 deductstmt.setDouble(3, amount);
                 int rowsAffected = deductstmt.executeUpdate();
 
@@ -58,7 +76,7 @@ public class TransactionService{
                 }
 
                 addrstamt.setDouble(1, amount);
-                addrstamt.setString(2, receiverAccountId);
+                addrstamt.setString(2, receiverAccId);
                 int receiverFound = addrstamt.executeUpdate();
 
                 if (receiverFound == 0){
@@ -66,9 +84,9 @@ public class TransactionService{
                 }
                 
                 loginstmt.setDouble(1, amount);
-                loginstmt.setInt(2, senderId);
-                loginstmt.setString(3, receiverAccountId);
-                loginstmt.setString(4, String.valueOf(senderId));
+                loginstmt.setString(2, senderAccId);
+                loginstmt.setString(3, receiverAccId);
+                loginstmt.setString(4, String.valueOf(senderAccId));
                 loginstmt.executeUpdate();
 
                 conn.commit();
@@ -84,13 +102,13 @@ public class TransactionService{
         }
     }
 
-    public void showHistory(int userId){
+    public void showHistory(String accountId){
         String sql = "SELECT * FROM transaction WHERE account_id = ? ORDER BY date DESC";
 
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
             
-            pstmt.setInt(1, userId);
+            pstmt.setString(1, accountId);
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -116,7 +134,7 @@ public class TransactionService{
         }
     }
 
-    public boolean withdraw(int userId, double amount){
+    public boolean withdraw(String accountId, double amount){
         String updateSQL = "UPDATE users SET balance = balance - ? WHERE id = ? AND BALANCE >= ?";
         String logSQL = "INSERT INTO transaction (amount, transaction_type, account_id) VALUES (?, 'WITHDRAW', ?)";
 
@@ -127,7 +145,7 @@ public class TransactionService{
                 PreparedStatement logstmt = conn.prepareStatement(logSQL)) {
                 
                 updatestmt.setDouble(1, amount);
-                updatestmt.setInt(2, userId);
+                updatestmt.setString(2, accountId);
                 updatestmt.setDouble(3, amount);
                 int affected = updatestmt.executeUpdate();
 
@@ -136,7 +154,7 @@ public class TransactionService{
                 }
 
                 logstmt.setDouble(1, amount);
-                logstmt.setInt(2, userId);
+                logstmt.setString(2, accountId);
                 logstmt.executeUpdate();
 
                 conn.commit();
@@ -149,5 +167,25 @@ public class TransactionService{
         } catch (SQLException e){
                 System.out.println("Connection Error: " + e.getMessage());
         } return false;
+    }
+
+    public double getUserBalance(String accountId) {
+        double balance = 0.0;
+        // Query base sa account_id na nasa database mo
+        String query = "SELECT balance FROM users WHERE account_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            pstmt.setString(1, accountId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                balance = rs.getDouble("balance");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return balance;
     }
 }
