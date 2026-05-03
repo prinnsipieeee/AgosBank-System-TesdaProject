@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.agosbank.services.TransactionService;
 
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -36,15 +37,16 @@ public class CashInController {
 
     @FXML
     public void initialize() {
-        // 1. I-display ang kasalukuyang balance mula sa session
         refreshBalanceDisplay();
 
-        // 2. Set Default Values
+
         recipientAccountField.setText(UserSession.getAccountId());
         sourceNameField.setText(UserSession.getFullName());
 
         // 3. Real-time Input Validation Visuals
         setupValidationListeners();
+
+        checkFormValidity();
     }
 
     private void refreshBalanceDisplay() {
@@ -76,8 +78,14 @@ public class CashInController {
     }
 
     private void checkFormValidity() {
-        boolean isAccountValid = recipientAccountField.getStyleClass().contains("text-field-success");
-        boolean isAmountValid = amountField.getStyleClass().contains("text-field-success");
+        // Siguraduhin na 'yung regex sa listener ay tumutugma sa account ID mo
+        boolean isAccountValid = recipientAccountField.getText().matches("AGOS-\\d{4}");
+        boolean isAmountValid = false;
+        try {
+            isAmountValid = Double.parseDouble(amountField.getText()) >= 100; // Min. 100 base sa UI mo
+        } catch (Exception e) {}
+
+        // I-disable ang button kung may mali
         confirmBtn.setDisable(!isAccountValid || !isAmountValid || sourceNameField.getText().isEmpty());
     }
 
@@ -99,29 +107,37 @@ public class CashInController {
     }
 
     private void executeTransaction(String targetAcc, double amount, String source) {
-        confirmBtn.setVisible(false);
+        // 🔥 FIX 1: Tago ang button, Labas ang loading
+        confirmBtn.setVisible(false); 
         loadingIndicator.setVisible(true);
 
         Task<Boolean> depositTask = new Task<>() {
             @Override
             protected Boolean call() throws Exception {
-                Thread.sleep(1500); // Effect lang para sa loading
+                Thread.sleep(1500); 
                 return transactionService.deposit(targetAcc, amount, source);
             }
         };
 
         depositTask.setOnSucceeded(e -> {
+            // 🔥 FIX 2: Tago ang loading, Labas ulit ang button
             loadingIndicator.setVisible(false);
-            confirmBtn.setVisible(true);
+            confirmBtn.setVisible(true); 
             
             if (depositTask.getValue()) {
-                // I-update ang balance sa session pagkatapos ng success
                 UserSession.setBalance(UserSession.getBalance() + amount);
                 refreshBalanceDisplay(); 
                 showSuccessWithReceipt(amount, targetAcc);
             } else {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Transaction failed. Please try again.");
+                showAlert(Alert.AlertType.ERROR, "Failed", "Transaction failed.");
             }
+        });
+
+        // Sa setOnFailed, dapat ibalik din ang button para hindi "stuck" ang user
+        depositTask.setOnFailed(e -> {
+            loadingIndicator.setVisible(false);
+            confirmBtn.setVisible(true);
+            showAlert(Alert.AlertType.ERROR, "Error", "Something went wrong.");
         });
 
         new Thread(depositTask).start();
@@ -183,5 +199,22 @@ public class CashInController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handlePresetAmount(ActionEvent event) {
+        // 1. Kunin ang button na pinindot
+        Button clickedButton = (Button) event.getSource();
+        
+        // 2. Kunin ang text sa loob ng button (halimbawa: "100" o "P100")
+        String amountText = clickedButton.getText();
+        
+        // 3. Linisin ang text (alisin ang "P" o "₱" kung mayroon man)
+        String cleanAmount = amountText.replace("P", "").replace("₱", "").replace(",", "").trim();
+        
+        // 4. Ilagay ang value sa TextField
+        amountField.setText(cleanAmount);
+        
+        System.out.println("Preset selected: ₱" + cleanAmount);
     }
 }

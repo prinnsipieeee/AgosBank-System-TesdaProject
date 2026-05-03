@@ -58,7 +58,7 @@
                   <Insets left="12.0" top="20.0" />
                </VBox.margin>
             </Label>
-            <TextField fx:id="amountField" alignment="CENTER" promptText="Min. ₱100.0" styleClass="input-group">
+            <TextField fx:id="amountField" alignment="CENTER" promptText="Min ₱100.00" styleClass="input-group">
                <VBox.margin>
                   <Insets left="8.0" top="10.0" />
                </VBox.margin>
@@ -68,10 +68,10 @@
                   <Insets bottom="10.0" top="20.0" />
                </padding>
                <children>
-                  <Button mnemonicParsing="false" styleClass="quick-amount-btn" text="₱100" />
-                  <Button mnemonicParsing="false" styleClass="quick-amount-btn" text="₱500" />
-                  <Button mnemonicParsing="false" styleClass="quick-amount-btn" text="₱1000" />
-                  <Button mnemonicParsing="false" styleClass="quick-amount-btn" stylesheets="@style.css" text="₱5000">
+                  <Button mnemonicParsing="false" onAction="#handlePresetAmount" styleClass="quick-amount-btn" text="₱100" />
+                  <Button mnemonicParsing="false" onAction="#handlePresetAmount" styleClass="quick-amount-btn" text="₱500" />
+                  <Button mnemonicParsing="false" onAction="#handlePresetAmount" styleClass="quick-amount-btn" text="₱1000" />
+                  <Button mnemonicParsing="false" onAction="#handlePresetAmount" styleClass="quick-amount-btn" stylesheets="@style.css" text="₱5000">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -95,8 +95,8 @@
       </VBox>
       <StackPane layoutX="54.0" layoutY="569.0">
          <children>
-            <ProgressIndicator fx:id="loadingIndicator" maxHeight="40.0" maxWidth="35.0" progress="0.0" visible="false" />
-            <Button fx:id="confirmBtn" mnemonicParsing="false" styleClass="button-cache" text="Confirm Cash In" StackPane.alignment="CENTER" />
+            <ProgressIndicator fx:id="loadingIndicator" maxHeight="40.0" maxWidth="35.0" mouseTransparent="true" progress="0.0" visible="false" />
+            <Button fx:id="confirmBtn" mnemonicParsing="false" onAction="#handleConfirmCashIn" styleClass="button-cache" text="Confirm Cash In" />
          </children>
       </StackPane>
       <Label alignment="CENTER" layoutX="73.0" layoutY="617.0" prefHeight="17.0" prefWidth="213.0" text="Secure 256-bit encrypted transaction" textFill="WHITE">
