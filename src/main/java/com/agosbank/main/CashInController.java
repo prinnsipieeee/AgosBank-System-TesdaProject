@@ -1,7 +1,6 @@
 package com.agosbank.main;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import com.agosbank.services.TransactionService;
 
@@ -9,13 +8,11 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
@@ -26,31 +23,47 @@ import javafx.stage.Stage;
 
 public class CashInController {
 
-    @FXML private Label availableBalanceLabel; // Bagong display para sa balance
+    @FXML private Label availableBalanceLabel;
     @FXML private TextField recipientAccountField;
     @FXML private TextField amountField;
     @FXML private TextField sourceNameField;
     @FXML private Button confirmBtn;
     @FXML private ProgressIndicator loadingIndicator;
 
+    @FXML private VBox notificationOverlay;
+    @FXML private Label notificationLabel;
+    @FXML private Button notificationBtn;
+
+    @FXML private Hyperlink receiptLink;
+
+    private double lastAmount;
+    private String lastAccId;
+
     private TransactionService transactionService = new TransactionService();
 
     @FXML
     public void initialize() {
         refreshBalanceDisplay();
-
+        
+        // Siguraduhin na tago ang notification sa simula
+        if (notificationOverlay != null) {
+            notificationOverlay.setVisible(false);
+            notificationOverlay.setManaged(false);
+            receiptLink.setVisible(false); // Siguraduhin na tago ang link
+            receiptLink.setManaged(false);
+        }
 
         recipientAccountField.setText(UserSession.getAccountId());
         sourceNameField.setText(UserSession.getFullName());
 
-        // 3. Real-time Input Validation Visuals
         setupValidationListeners();
-
         checkFormValidity();
+
+        amountField.setAlignment(Pos.CENTER);
+        recipientAccountField.setAlignment(Pos.CENTER);
     }
 
     private void refreshBalanceDisplay() {
-        // Kunin ang balance sa UserSession at i-format nang may pesong sign
         double currentBalance = UserSession.getBalance();
         availableBalanceLabel.setText("Available Balance: ₱ " + String.format("%,.2f", currentBalance));
     }
@@ -64,7 +77,7 @@ public class CashInController {
         amountField.textProperty().addListener((obs, oldVal, newVal) -> {
             try {
                 double val = Double.parseDouble(newVal);
-                updateStyle(amountField, val > 0);
+                updateStyle(amountField, val >= 100); // Min. 100
             } catch (NumberFormatException e) {
                 updateStyle(amountField, false);
             }
@@ -78,15 +91,36 @@ public class CashInController {
     }
 
     private void checkFormValidity() {
-        // Siguraduhin na 'yung regex sa listener ay tumutugma sa account ID mo
         boolean isAccountValid = recipientAccountField.getText().matches("AGOS-\\d{4}");
         boolean isAmountValid = false;
         try {
-            isAmountValid = Double.parseDouble(amountField.getText()) >= 100; // Min. 100 base sa UI mo
+            isAmountValid = Double.parseDouble(amountField.getText()) >= 100;
         } catch (Exception e) {}
 
-        // I-disable ang button kung may mali
         confirmBtn.setDisable(!isAccountValid || !isAmountValid || sourceNameField.getText().isEmpty());
+    }
+
+    // --- CUSTOM NOTIFICATION LOGIC ---
+
+    private void showNotification(String message, String buttonText, boolean showReceipt) {
+        notificationLabel.setText(message);
+        notificationBtn.setText(buttonText);
+
+        receiptLink.setVisible(showReceipt);
+        receiptLink.setManaged(showReceipt);
+        
+        notificationOverlay.setVisible(true);
+        notificationOverlay.setManaged(true);
+        notificationOverlay.toFront(); // Siguraduhin na nasa pinaka-ibabaw
+    }
+
+    @FXML
+    private void closeNotification() {
+        notificationOverlay.setVisible(false);
+        notificationOverlay.setManaged(false);
+
+         receiptLink.setVisible(false);
+        receiptLink.setManaged(false);
     }
 
     @FXML
@@ -95,126 +129,102 @@ public class CashInController {
         String amountText = amountField.getText();
         String source = sourceNameField.getText();
 
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Confirm Transaction");
-        confirmAlert.setHeaderText("AgosBank - Verification");
-        confirmAlert.setContentText("Sigurado ka bang maghuhulog ka ng ₱" + amountText + " kay " + targetAcc + "?");
-
-        Optional<ButtonType> result = confirmAlert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            executeTransaction(targetAcc, Double.parseDouble(amountText), source);
-        }
+        // Imbes na Alert Confirmation, rekta na tayo sa execute (o pwede ka gumawa ng confirm overlay)
+        executeTransaction(targetAcc, Double.parseDouble(amountText), source);
     }
 
     private void executeTransaction(String targetAcc, double amount, String source) {
-        // 🔥 FIX 1: Tago ang button, Labas ang loading
+        // 1. Tago muna ang button at ipakita ang loading indicator
         confirmBtn.setVisible(false); 
         loadingIndicator.setVisible(true);
 
         Task<Boolean> depositTask = new Task<>() {
             @Override
             protected Boolean call() throws Exception {
-                Thread.sleep(1500); 
+                Thread.sleep(1500); // Konting delay para sa "executive" feel ng processing
+                // Tatawagin ang service. Kung false, ibig sabihin may mali sa database check.
                 return transactionService.deposit(targetAcc, amount, source);
             }
         };
 
         depositTask.setOnSucceeded(e -> {
-            // 🔥 FIX 2: Tago ang loading, Labas ulit ang button
             loadingIndicator.setVisible(false);
             confirmBtn.setVisible(true); 
             
             if (depositTask.getValue()) {
+
+                this.lastAmount = amount;
+                this.lastAccId = targetAcc;
+
                 UserSession.setBalance(UserSession.getBalance() + amount);
                 refreshBalanceDisplay(); 
-                showSuccessWithReceipt(amount, targetAcc);
+                
+                showNotification("Transaction successful! ₱" + String.format("%,.2f", amount) + " has been added.", "DONE" , true);
             } else {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Transaction failed.");
+                // FAILURE: Dito papasok 'yung error message para sa maling ID o Name
+                showNotification("Transaction failed. Walang ganitong ID or Name sa database.", "TRY AGAIN" , false);
             }
         });
 
-        // Sa setOnFailed, dapat ibalik din ang button para hindi "stuck" ang user
         depositTask.setOnFailed(e -> {
+            // SYSTEM ERROR: Kapag patay ang XAMPP o may SQL error
             loadingIndicator.setVisible(false);
             confirmBtn.setVisible(true);
-            showAlert(Alert.AlertType.ERROR, "Error", "Something went wrong.");
+            showNotification("System Error. Pakicheck kung naka-ON ang XAMPP o database connection.", "OK", false);
+            
+            // Para makita mo ang actual error sa console habang nagde-debug
+            depositTask.getException().printStackTrace();
         });
 
         new Thread(depositTask).start();
     }
 
-    private void showSuccessWithReceipt(double amount, String accId) {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("AgosBank Success");
-        
-        Label msg = new Label("Transaction successful!");
-        Hyperlink receiptLink = new Hyperlink("Generate Receipt");
-        receiptLink.setOnAction(e -> {
-            dialog.close();
-            openReceipt(amount, accId);
-        });
-
-        VBox box = new VBox(10, msg, receiptLink);
-        box.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        dialog.getDialogPane().setContent(box);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        
-        dialog.showAndWait(); // Tinanggal natin ang backToDashboard dito para makita yung updated balance
-    }
-
-    private void openReceipt(double amount, String accId) {
-        System.out.println("Opening Receipt...");
-        // Dito papasok yung logic para sa receipt.fxml mo
-    }
-
     @FXML
     private void backToDashboard(MouseEvent event) {
         try {
-            // Siguraduhin na ang path ay nagsisimula sa "/" at match sa folder sa VS Code sidebar
             String path = "/com/agosbank/fxml/dashboard.fxml";
-            
             FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
             Parent root = loader.load();
-
-            // Kunin ang Stage mula sa mouse event source
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
             stage.show();
-            
-            System.out.println("Returned to Dashboard via Icon Click");
-            
-        } catch (IOException e) {
-            System.err.println("Error: Hindi mahanap ang file sa location: " + e.getMessage());
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
-        } catch (NullPointerException e) {
-            System.err.println("Error: Null ang location! Pakicheck kung tama ang spelling ng path.");
         }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 
     @FXML
     private void handlePresetAmount(ActionEvent event) {
-        // 1. Kunin ang button na pinindot
         Button clickedButton = (Button) event.getSource();
-        
-        // 2. Kunin ang text sa loob ng button (halimbawa: "100" o "P100")
         String amountText = clickedButton.getText();
-        
-        // 3. Linisin ang text (alisin ang "P" o "₱" kung mayroon man)
         String cleanAmount = amountText.replace("P", "").replace("₱", "").replace(",", "").trim();
-        
-        // 4. Ilagay ang value sa TextField
         amountField.setText(cleanAmount);
-        
-        System.out.println("Preset selected: ₱" + cleanAmount);
+    }
+    @FXML
+    private void handleOpenReceipt() {
+        System.out.println("Hyperlink Clicked!"); // TEST 1
+        closeNotification();
+        System.out.println("Opening Receipt with: " + lastAmount + " for " + lastAccId); // TEST 2
+        openReceipt(lastAmount, lastAccId);
+    }
+
+    private void openReceipt(double amount, String accId) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agosbank/fxml/receipt.fxml"));
+            Parent root = loader.load();
+
+            // Kunin ang controller ng Receipt
+            ReceiptController controller = loader.getController();
+            // Ipasa ang data (Type, Amount, Recipient, RefID)
+            controller.setData("Cash In", amount, accId);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgosBank - Official Receipt");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

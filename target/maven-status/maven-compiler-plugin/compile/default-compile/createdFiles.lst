@@ -4,6 +4,7 @@ com\agosbank\services\AuthService.class
 com\agosbank\main\CashInController$1.class
 com\agosbank\main\UserSession.class
 com\agosbank\models\Transaction.class
+com\agosbank\main\ReceiptController.class
 com\agosbank\database\DBConnection.class
 com\agosbank\main\App.class
 com\agosbank\main\LoginController.class
