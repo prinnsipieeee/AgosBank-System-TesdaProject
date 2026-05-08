@@ -2,43 +2,55 @@ package com.agosbank.main;
 
 /**
  * UserSession serves as a global state for the logged-in user.
- * It stores the user's name, account ID, and current balance.
+ * Singleton pattern implementation for AgosBank.
  */
-
 public class UserSession {
-    private static String fullName;
-    private static String accountId;
-    private static double balance; 
+    private static UserSession instance;
+    
+    // Tinanggal ang 'static' dito para maging pag-aari sila ng instance
+    private String fullName;
+    private String accountId;
+    private double balance; 
 
-    public static void setFullName(String name) {
-        fullName = name;
+    // Private constructor: Hindi pwedeng i-new sa ibang class
+    private UserSession() {}
+
+    public static UserSession getInstance() {
+        if (instance == null) {
+            instance = new UserSession();
+        }
+        return instance;
     }
 
-    public static String getFullName() {
+    // Instance getters and setters (tinanggal ang static keyword)
+    public void setFullName(String name) {
+        this.fullName = name;
+    }
+
+    public String getFullName() {
         return fullName;
     }
 
-    public static void setAccountId(String id) {
-        accountId = id;
+    public void setAccountId(String id) {
+        this.accountId = id;
     }
 
-    public static String getAccountId() {
+    public String getAccountId() {
         return accountId;
     }
 
-    // New Getter and Setter for Balance
-    public static void setBalance(double currentBalance) {
-        balance = currentBalance;
+    public void setBalance(double currentBalance) {
+        this.balance = currentBalance;
     }
 
-    public static double getBalance() {
+    public double getBalance() {
         return balance;
     }
 
     /**
      * Resets the session data upon logout.
      */
-    public static void cleanUserSession() {
+    public void cleanUserSession() {
         fullName = null;
         accountId = null;
         balance = 0.0;

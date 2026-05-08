@@ -54,11 +54,11 @@ public class LoginController {
             User loggedInUser = authService.loginUser(user, pass);
 
             if (loggedInUser != null) {
-                UserSession.setFullName(loggedInUser.getFullName());
-                UserSession.setAccountId(String.valueOf(loggedInUser.getAccountId()));
-                UserSession.setBalance(loggedInUser.getBalance());
+                UserSession.getInstance().setFullName(loggedInUser.getFullName());
+                UserSession.getInstance().setAccountId(String.valueOf(loggedInUser.getAccountId()));
+                UserSession.getInstance().setBalance(loggedInUser.getBalance());
 
-                System.out.println("Login Success! Welcome, " + UserSession.getFullName());
+                System.out.println("Login Success! Welcome, " + UserSession.getInstance().getFullName());
 
                 navigateToDashboard();
                 

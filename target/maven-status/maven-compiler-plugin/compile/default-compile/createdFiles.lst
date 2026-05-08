@@ -1,5 +1,6 @@
 com\agosbank\models\User.class
 com\agosbank\services\TransactionService.class
+com\agosbank\main\SendMoneyController.class
 com\agosbank\services\AuthService.class
 com\agosbank\main\CashInController$1.class
 com\agosbank\main\UserSession.class

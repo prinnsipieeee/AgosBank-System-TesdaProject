@@ -29,7 +29,7 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        String userName = UserSession.getFullName();
+        String userName = UserSession.getInstance().getFullName();
         if (userName != null && !userName.isEmpty()) {
             greetingLabel.setText("Hi, " + userName + "!");
         } else {
@@ -42,7 +42,7 @@ public class DashboardController implements Initializable {
     }
 
     private void loadBalanceFromDB() {
-        String accountId = UserSession.getAccountId();
+        String accountId = UserSession.getInstance().getAccountId();
         
         if (accountId != null) {
             this.currentBalance = transactionService.getUserBalance(accountId);
@@ -90,7 +90,27 @@ public class DashboardController implements Initializable {
     }
 
     @FXML
-    private void handleSendMoney() {
-        System.out.println("Navigating to Send Money...");
+    private void handleSendMoney(ActionEvent event) {
+         try {
+            // 1. I-load ang cash_in.fxml mula sa resources folder mo
+            // Base sa structure mo: /com/agosbank/fxml/cash_in.fxml
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agosbank/fxml/send_money.fxml"));
+            Parent root = loader.load();
+
+            // 2. Kunin ang kasalukuyang Stage (Window) gamit ang button na pinindot
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            // 3. I-set ang bagong Scene
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.centerOnScreen(); // Para laging nasa gitna ang window
+            stage.show();
+
+            System.out.println("Navigating to Send Money... Success!");
+            
+        } catch (IOException e) {
+            System.err.println("Error loading Send Money screen: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

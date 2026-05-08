@@ -322,6 +322,7 @@
 }
 
 .availableBalanceLabel {
+    -fx-font-color: white;
     -fx-font-weight: bold;
     -fx-padding: 5 0 15 0;
     -fx-opacity: 0.9;
@@ -345,7 +346,16 @@
 .notification-label {
     -fx-text-fill: white;
     -fx-font-family: "Segoe UI";
-    -fx-font-size: 10px;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+.notification-label2 {
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
     -fx-text-alignment: center;
     -fx-wrap-text: true;
@@ -361,8 +371,22 @@
     -fx-cursor: hand;
 }
 
+.notification-button2 {
+    -fx-background-color: rgb(178, 4, 4);
+    -fx-text-fill: #0d1b2a;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-padding: 8px 25px;
+    -fx-cursor: hand;
+}
+
 .notification-button:hover {
     -fx-background-color: #0081a7;
+    -fx-text-fill: white;
+}
+
+.notification-button2:hover {
+    -fx-background-color: red;
     -fx-text-fill: white;
 }
 

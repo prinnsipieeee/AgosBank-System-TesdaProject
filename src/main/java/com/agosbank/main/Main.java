@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
         while (true) {
             // Imbes na currentUser, tinitignan natin kung may accountId sa Session
-            if (UserSession.getAccountId() == null) {
+            if (UserSession.getInstance().getAccountId() == null) {
                 showWelcomeMenu();
             } else {
                 showDashboardMenu();
@@ -47,10 +47,10 @@ public class Main {
     private static void showDashboardMenu() {
         System.out.println("\n==================================");
         System.out.println("        AGOSBANK DASHBOARD");
-        System.out.println("    Welcome, " + UserSession.getFullName());
+        System.out.println("    Welcome, " + UserSession.getInstance().getFullName());
         System.out.println("==================================");
-        System.out.println("Account ID:      " + UserSession.getAccountId());
-        System.out.println("Current Balance: ₱" + String.format("%,.2f", UserSession.getBalance()));
+        System.out.println("Account ID:      " + UserSession.getInstance().getAccountId());
+        System.out.println("Current Balance: ₱" + String.format("%,.2f", UserSession.getInstance().getBalance()));
         System.out.println("----------------------------------");
         System.out.println("[1] Cash In");
         System.out.println("[2] Send Money");
@@ -65,9 +65,9 @@ public class Main {
             case "1" -> handleCashIn();
             case "2" -> handleSendMoney();
             case "3" -> handleWithdraw();
-            case "4" -> ts.showHistory(UserSession.getAccountId()); // Gumagamit na ng Account ID
+            case "4" -> ts.showHistory(UserSession.getInstance().getAccountId()); // Gumagamit na ng Account ID
             case "5" -> {
-                UserSession.cleanUserSession(); // I-reset ang session data
+                UserSession.getInstance().cleanUserSession(); // I-reset ang session data
                 System.out.println("Logged out successfully.");
             }
             default -> System.out.println("Option not available yet.");
@@ -85,11 +85,11 @@ public class Main {
 
         if (user != null) {
             // DITO NA NATIN ILILIPAT SA SESSION ANG DATA MULA SA DATABASE
-            UserSession.setAccountId(user.getAccountId());
-            UserSession.setFullName(user.getFullName());
-            UserSession.setBalance(user.getBalance()); 
+            UserSession.getInstance().setAccountId(user.getAccountId());
+            UserSession.getInstance().setFullName(user.getFullName());
+            UserSession.getInstance().setBalance(user.getBalance()); 
             
-            System.out.println("Login Successful! Welcome back, " + UserSession.getFullName());
+            System.out.println("Login Successful! Welcome back, " + UserSession.getInstance().getFullName());
         } else {
             System.out.println("Invalid credentials.");
         }
@@ -134,10 +134,10 @@ public class Main {
 
         if (success) {
             // I-update lang ang session kung sariling account ang hinulugan
-            if (accountId.equals(UserSession.getAccountId())) {
-                UserSession.setBalance(UserSession.getBalance() + amount);
+            if (accountId.equals(UserSession.getInstance().getAccountId())) {
+                UserSession.getInstance().setBalance(UserSession.getInstance().getBalance() + amount);
             }
-            System.out.println("Cash In Successful! New Balance: ₱" + String.format("%,.2f", UserSession.getBalance()));
+            System.out.println("Cash In Successful! New Balance: ₱" + String.format("%,.2f", UserSession.getInstance().getBalance()));
         } else {
             System.out.println("Cash In Failed. Please check the Account ID.");
         }
@@ -151,17 +151,17 @@ public class Main {
         System.out.print("Enter amount to send: ");
         double amount = Double.parseDouble(sc.nextLine());
 
-        if (amount <= 0 || amount > UserSession.getBalance()) {
+        if (amount <= 0 || amount > UserSession.getInstance().getBalance()) {
             System.out.println("Invalid amount or insufficient balance.");
             return;
         }
 
         // Gamitin ang UserSession.getAccountId() bilang sender
-        boolean success = ts.sendMoney(UserSession.getAccountId(), receiverId, amount);
+        boolean success = ts.sendMoney(UserSession.getInstance().getAccountId(), receiverId, amount);
 
         if (success) {
-            UserSession.setBalance(UserSession.getBalance() - amount);
-            System.out.println("Transfer Successful! New Balance: ₱" + String.format("%,.2f", UserSession.getBalance()));
+            UserSession.getInstance().setBalance(UserSession.getInstance().getBalance() - amount);
+            System.out.println("Transfer Successful! New Balance: ₱" + String.format("%,.2f", UserSession.getInstance().getBalance()));
         } else {
             System.out.println("Transfer Failed. Check receiver ID or your balance.");
         }
@@ -172,16 +172,16 @@ public class Main {
         System.out.print("Enter amount to withdraw: ₱");
         double amount = Double.parseDouble(sc.nextLine());
 
-        if (amount <= 0 || amount > UserSession.getBalance()) {
+        if (amount <= 0 || amount > UserSession.getInstance().getBalance()) {
             System.out.println("❌ Invalid amount or insufficient balance.");
             return;
         }
 
-        boolean success = ts.withdraw(UserSession.getAccountId(), amount);
+        boolean success = ts.withdraw(UserSession.getInstance().getAccountId(), amount);
 
         if (success) {
-            UserSession.setBalance(UserSession.getBalance() - amount);
-            System.out.println("✅ Please take your cash. New Balance: ₱" + String.format("%,.2f", UserSession.getBalance()));
+            UserSession.getInstance().setBalance(UserSession.getInstance().getBalance() - amount);
+            System.out.println("✅ Please take your cash. New Balance: ₱" + String.format("%,.2f", UserSession.getInstance().getBalance()));
         } else {
             System.out.println("❌ Withdraw Failed.");
         }

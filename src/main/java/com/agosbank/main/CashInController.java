@@ -53,8 +53,8 @@ public class CashInController {
             receiptLink.setManaged(false);
         }
 
-        recipientAccountField.setText(UserSession.getAccountId());
-        sourceNameField.setText(UserSession.getFullName());
+        recipientAccountField.setText(UserSession.getInstance().getAccountId());
+        sourceNameField.setText(UserSession.getInstance().getFullName());
 
         setupValidationListeners();
         checkFormValidity();
@@ -64,7 +64,7 @@ public class CashInController {
     }
 
     private void refreshBalanceDisplay() {
-        double currentBalance = UserSession.getBalance();
+        double currentBalance = UserSession.getInstance().getBalance();
         availableBalanceLabel.setText("Available Balance: ₱ " + String.format("%,.2f", currentBalance));
     }
 
@@ -156,7 +156,7 @@ public class CashInController {
                 this.lastAmount = amount;
                 this.lastAccId = targetAcc;
 
-                UserSession.setBalance(UserSession.getBalance() + amount);
+                UserSession.getInstance().setBalance(UserSession.getInstance().getBalance() + amount);
                 refreshBalanceDisplay(); 
                 
                 showNotification("Transaction successful! ₱" + String.format("%,.2f", amount) + " has been added.", "DONE" , true);

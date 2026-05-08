@@ -96,7 +96,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor></Button>
                         <HBox alignment="CENTER" prefHeight="69.0" prefWidth="67.0" />
-                        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" styleClass="action-button" stylesheets="@style.css" text="SEND">
+                        <Button fx:id="handleSendMoney" mnemonicParsing="false" onAction="#handleSendMoney" prefHeight="50.0" prefWidth="140.0" styleClass="action-button" stylesheets="@style.css" text="SEND">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>

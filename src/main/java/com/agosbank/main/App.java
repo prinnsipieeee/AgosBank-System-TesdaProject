@@ -12,7 +12,6 @@ public class App extends Application {
     public void start(Stage stage) throws Exception {
         // LOGIN na agad ang load natin dito
         Parent root = FXMLLoader.load(getClass().getResource("/com/agosbank/fxml/login.fxml"));
-        
         Scene scene = new Scene(root);
         
         stage.setTitle("AgosBank - Login");
