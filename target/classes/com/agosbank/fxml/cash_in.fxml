@@ -23,7 +23,7 @@
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <ImageView fx:id="backBtn" fitHeight="61.0" fitWidth="41.0" onMouseClicked="#backToDashboard" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="backBtn" fitHeight="50.0" fitWidth="50.0" onMouseClicked="#backToDashboard" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../assets/images__3_-removebg-preview.png" />
                            </image>

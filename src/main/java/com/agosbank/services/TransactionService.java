@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.agosbank.database.DBConnection;
+import com.agosbank.models.Transaction;
 ;
 
 public class TransactionService{
@@ -52,6 +55,26 @@ public class TransactionService{
             System.out.println("Connection Error: " + e.getMessage());
         } 
         return false;
+    }
+
+    public boolean validateRecipient(String accountId, String fullName, String mobileNum) {
+        String sql = "SELECT * FROM users WHERE account_id = ? AND full_name = ? AND phone_number = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, accountId);
+            pstmt.setString(2, fullName);
+            pstmt.setString(3, mobileNum);
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            return rs.next(); 
+            
+        } catch (SQLException e) {
+            System.err.println("Validation Error: " + e.getMessage());
+            return false;
+        }
     }
 
     public boolean sendMoney(String senderAccId, String receiverAccId, double amount){
@@ -123,36 +146,40 @@ public class TransactionService{
         }
     }
 
-    public void showHistory(String accountId){
-        String sql = "SELECT * FROM transaction WHERE account_id = ? ORDER BY date DESC";
+    public List<Transaction> getFilteredHistory(String accountId, String filterType) {
+        List<Transaction> list = new ArrayList<>();
+        String dateCondition = "";
 
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        // Executive Logic: Date Filtering
+        switch (filterType) {
+            case "TODAY": dateCondition = " AND DATE(date) = CURDATE()"; break;
+            case "MONTH": dateCondition = " AND MONTH(date) = MONTH(CURDATE()) AND YEAR(date) = YEAR(CURDATE())"; break;
+            default: dateCondition = ""; // "ALL"
+        }
+
+        String sql = "SELECT * FROM transaction WHERE account_id = ?" + dateCondition + " ORDER BY date DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, accountId);
-
             ResultSet rs = pstmt.executeQuery();
 
-            System.out.println("\n========= 🧾 TRANSACTION HISTORY =========");
-            System.out.printf("%-15s | %-12s | %-20s\n", "TYPE", "AMOUNT", "DATE");
-            System.out.println("------------------------------------------");
-
-            boolean hasTransactions = false;
-            while(rs.next()){
-                hasTransactions = true;
-                String type = rs.getString("transaction_type");
-                double amount = rs.getDouble("amount");
-                String date = rs.getString("date");
-
-                System.out.printf("%-15s | ₱%-11.2f | %-20s\n", type, amount, date);
+            while (rs.next()) {
+                list.add(new Transaction(
+                    rs.getInt("id"),
+                    rs.getDouble("amount"),
+                    rs.getString("transaction_type"),
+                    rs.getString("sender_name"),
+                    rs.getString("receiver_name"),
+                    rs.getString("account_id"),
+                    rs.getTimestamp("date"),
+                    rs.getString("transferTOID"),
+                    rs.getString("transferFromID")
+                ));
             }
-            if(!hasTransactions){
-                System.out.println("No transaction found yet. ");
-            }
-            System.out.println("===================================\n");
-        } catch(SQLException e){
-            System.out.println("History Error: " + e.getMessage());
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
     }
 
     public boolean withdraw(String accountId, double amount){

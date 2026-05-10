@@ -355,7 +355,7 @@
 .notification-label2 {
     -fx-text-fill: white;
     -fx-font-family: "Segoe UI";
-    -fx-font-size: 12px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-alignment: center;
     -fx-wrap-text: true;
@@ -390,24 +390,21 @@
     -fx-text-fill: white;
 }
 
-/* Styling para sa mismong spinner */
 .progress-indicator {
     -fx-progress-color: #00d2ff; /* Agos Blue */
     -fx-max-width: 50px;
     -fx-max-height: 50px;
 }
 
-/* Tinatanggal ang background circle at border para "flat" at modern ang dating */
 .progress-indicator .indicator {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-background-insets: 0;
 }
 
-/* Styling para sa "done" tick/check mark (kung gagamitin mo) */
 .progress-indicator .tick {
     -fx-background-color: #00d2ff;
-    -fx-shape: "M0,4 L4,8 L12,0 L12,2 L4,10 L0,6 Z"; /* Custom checkmark shape */
+    -fx-shape: "M0,4 L4,8 L12,0 L12,2 L4,10 L0,6 Z";
 }
 .progress-indicator .percentage {
     -fx-fill: transparent;
@@ -458,6 +455,8 @@
 .receipt-text {
     -fx-text-fill: white;
     -fx-font-family: "Segoe UI";
+    -fx-font-weight: bold;
+
 }
 
 .receipt-button {

@@ -9,36 +9,39 @@ import java.sql.SQLException;
 import com.agosbank.database.DBConnection;
 import com.agosbank.services.TransactionService;
 
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class SendMoneyController {
 
     @FXML private Label balanceLabel, statusMsgLabel;
     @FXML private TextField recipientAccField, amountField;
-    @FXML private TextField mobilefield;
+    @FXML private TextField mobileField;
     @FXML private TextField nameField;
-
     @FXML private VBox notificationOverlay;
     @FXML private ProgressIndicator loadingIndicator;
     @FXML private Button notificationBtn;
+    @FXML private Hyperlink receiptLink;
+    @FXML private VBox confirmationOverlay;
+    @FXML private Label confirmMsgLabel;
+    @FXML private Button sendBtn;
 
     private double pendingAmount;
     private String pendingRecipient;
-
-    @FXML private VBox confirmationOverlay;
-    @FXML private Label confirmMsgLabel;
-
+    private String pendingRecipientName;
     private double currentBalance = 0.0;
     private final String currentUserAcc = UserSession.getInstance().getAccountId();
 
@@ -68,10 +71,12 @@ public class SendMoneyController {
         System.out.println("Validation Started...");
         
         String recipientInput = recipientAccField.getText().trim();
+        String recipientName = nameField.getText().trim();
+        String mobileNumInput = mobileField.getText().trim();
         String amountInput = amountField.getText().trim();
 
         // 1. UI Validation
-        if (recipientInput.isEmpty() || amountInput.isEmpty()) {
+        if (recipientInput.isEmpty() || recipientName.isEmpty() || amountInput.isEmpty() || mobileNumInput.isEmpty()) {
             showNotification("Please fill in all required fields.", false);
             return;
         }
@@ -80,18 +85,40 @@ public class SendMoneyController {
             double amount = Double.parseDouble(amountInput);
 
             // 2. Business Logic Validation
-            if (amount < 100) { showNotification("Min ₱100.00", false); return; }
-            if (amount > currentBalance) { showNotification("Insufficient balance", false); return; }
+            if (amount < 100) { 
+                showNotification("Min ₱100.00", false); return; }
+            if (amount > currentBalance) { 
+                showNotification("Insufficient balance", false); return; }
+            
+            sendBtn.setVisible(false);
+            loadingIndicator.setVisible(true);
+
+            PauseTransition pause = new PauseTransition(Duration.seconds(1.2));
+            pause.setOnFinished(event -> {
+
+            TransactionService service = new TransactionService();
+
+            boolean isValid = service.validateRecipient(recipientInput, recipientName, mobileNumInput);
+
+            loadingIndicator.setVisible(false);
+
+            if (!isValid) {
+                showNotification("Check recipient details. Account Number, Mobile Number or Name of Recipient is mismatch.", false);
+                sendBtn.setVisible(true);
+                return; 
+            }
 
             // 3. I-store ang data at Ipakita ang Confirmation Overlay
             this.pendingAmount = amount;
             this.pendingRecipient = recipientInput;
+            this.pendingRecipientName = recipientName;
 
             confirmMsgLabel.setText("Are you sure you want to send\n₱" + 
                                    String.format("%,.2f", amount) + " to " + recipientInput + "?");
-            
-            confirmationOverlay.setVisible(true);
 
+            confirmationOverlay.setVisible(true);
+        });
+        pause.play();
         } catch (NumberFormatException e) {
             showNotification("Invalid amount format.", false);
         }
@@ -111,35 +138,53 @@ public class SendMoneyController {
         boolean isSuccess = transService.sendMoney(senderAccId, pendingRecipient, pendingAmount);
 
         if (isSuccess) {
-            showNotification("Transfer Successful!", true);
+            showNotification(String.format("Transfer Successful!\n₱%,.2f has been sent\nto %s", 
+                                   pendingAmount, pendingRecipient ), true);
             loadCurrentBalance();
             recipientAccField.clear();
             amountField.clear();
-        } else {
-            showNotification("Transaction failed. Check recipient details.", false);
         }
     }
 
     @FXML
     private void cancelTransfer() {
         confirmationOverlay.setVisible(false);
+        sendBtn.setVisible(true);
         System.out.println("Transfer cancelled by user.");
     }
 
     private void showNotification(String message, boolean isSuccess) {
         statusMsgLabel.setText(message);
-        statusMsgLabel.setStyle(isSuccess ? "-fx-text-fill: #00d9a5;" : "-fx-text-fill: #ff4d4d;");
+        statusMsgLabel.setWrapText(true);
+        statusMsgLabel.setMaxWidth(260);
+        statusMsgLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        receiptLink.setVisible(isSuccess);
+        receiptLink.setManaged(isSuccess);
+
+        loadingIndicator.setVisible(false);
+        loadingIndicator.setManaged(false);
+        sendBtn.setVisible(true);
+        if(isSuccess){
+            notificationBtn.setText("DONE");
+            statusMsgLabel.setStyle("-fx-text-fill: #ffffff;");
+
+        } else {
+            notificationBtn.setText("TRY AGAIN");
+            statusMsgLabel.setStyle("-fx-text-fill: #ff6b6b;");
+            receiptLink.setVisible(false);
+        }
         notificationOverlay.setVisible(true);
     }
 
     @FXML
     private void closeNotification() {
         notificationOverlay.setVisible(false);
+        sendBtn.setVisible(true);
     }
 
     @FXML
     private void handleGenerateReceipt() {
-        openReceipt(Double.parseDouble(amountField.getText()), recipientAccField.getText());
+        openReceipt(this.pendingAmount, this.pendingRecipient);
     }
 
     private void openReceipt(double amount, String accId) {

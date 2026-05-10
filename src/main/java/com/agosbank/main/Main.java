@@ -65,7 +65,9 @@ public class Main {
             case "1" -> handleCashIn();
             case "2" -> handleSendMoney();
             case "3" -> handleWithdraw();
-            case "4" -> ts.showHistory(UserSession.getInstance().getAccountId()); // Gumagamit na ng Account ID
+            case "4" -> {
+                System.out.println("Transaction history feature is currently unavailable.");
+            }
             case "5" -> {
                 UserSession.getInstance().cleanUserSession(); // I-reset ang session data
                 System.out.println("Logged out successfully.");

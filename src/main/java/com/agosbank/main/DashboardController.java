@@ -2,19 +2,27 @@ package com.agosbank.main;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import com.agosbank.models.Transaction;
 import com.agosbank.services.TransactionService;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class DashboardController implements Initializable {
@@ -22,6 +30,7 @@ public class DashboardController implements Initializable {
     @FXML private Label greetingLabel;
     @FXML private Label balanceLabel;
     @FXML private ImageView toggleIcon; 
+    @FXML private VBox dashboardHistoryContainer;
 
     private TransactionService transactionService = new TransactionService();
     private double currentBalance = 0.0;
@@ -37,8 +46,8 @@ public class DashboardController implements Initializable {
         }
 
         loadBalanceFromDB();
-
         updateBalanceDisplay();
+        loadRecentHistory();
     }
 
     private void loadBalanceFromDB() {
@@ -112,5 +121,58 @@ public class DashboardController implements Initializable {
             System.err.println("Error loading Send Money screen: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public void loadRecentHistory() {
+        dashboardHistoryContainer.getChildren().clear();
+        TransactionService service = new TransactionService();
+        
+        // Kunin ang "ALL" pero i-limit natin sa top 5 para sa Dashboard
+        List<Transaction> history = service.getFilteredHistory(UserSession.getInstance().getAccountId(), "ALL");
+
+        int count = 0;
+        for (Transaction t : history) {
+            if (count >= 5) break; 
+            dashboardHistoryContainer.getChildren().add(createHistoryItem(t));
+            count++;
+        }
+    }
+
+    private Node createHistoryItem(Transaction transaction) {
+        HBox item = new HBox(15);
+        item.setPadding(new Insets(12));
+        item.setAlignment(Pos.CENTER_LEFT);
+        item.setStyle("-fx-background-color: #1e2d3e; -fx-background-radius: 12; -fx-margin: 5;");
+
+        // 1. Icon Label (Ang "Executive" Symbol)
+        Label icon = new Label();
+        if (transaction.getTransactionType().equals("CASH IN")) {
+            icon.setText("↙"); // O kaya "➕"
+            icon.setStyle("-fx-text-fill: #00ffcc; -fx-font-size: 18px; -fx-font-weight: bold;");
+        } else {
+            icon.setText("↗"); // O kaya "➖"
+            icon.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 18px; -fx-font-weight: bold;");
+        }
+
+        // 2. Transaction Details (Type + Date)
+        VBox details = new VBox(2);
+        Label typeLabel = new Label(transaction.getTransactionType());
+        typeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
+        
+        // Formatting the date para mas malinis
+        String formattedDate = transaction.getDate().toLocalDateTime().format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, hh:mm a"));
+        Label dateLabel = new Label(formattedDate);
+        dateLabel.setStyle("-fx-text-fill: #95a5a6; -fx-font-size: 10px;");
+        details.getChildren().addAll(typeLabel, dateLabel);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        // 3. Amount
+        Label amountLabel = new Label(String.format("₱%,.2f", transaction.getAmount()));
+        amountLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
+
+        item.getChildren().addAll(icon, details, spacer, amountLabel);
+        return item;
     }
 }
