@@ -148,16 +148,22 @@ public class TransactionService{
 
     public List<Transaction> getFilteredHistory(String accountId, String filterType) {
         List<Transaction> list = new ArrayList<>();
-        String dateCondition = "";
-
-        // Executive Logic: Date Filtering
-        switch (filterType) {
-            case "TODAY": dateCondition = " AND DATE(date) = CURDATE()"; break;
-            case "MONTH": dateCondition = " AND MONTH(date) = MONTH(CURDATE()) AND YEAR(date) = YEAR(CURDATE())"; break;
-            default: dateCondition = ""; // "ALL"
+        String dateQuery = "";
+            switch (filterType) {
+            case "TODAY":
+                dateQuery = " AND DATE(date) = CURDATE()";
+                break;
+            case "THIS MONTH":
+                dateQuery = " AND MONTH(date) = MONTH(CURDATE()) AND YEAR(date) = YEAR(CURDATE())";
+                break;
+            case "THIS YEAR":
+                dateQuery = " AND YEAR(date) = YEAR(CURDATE())";
+                break;
+            default: // "ALL"
+                dateQuery = ""; 
         }
 
-        String sql = "SELECT * FROM transaction WHERE account_id = ?" + dateCondition + " ORDER BY date DESC";
+        String sql = "SELECT * FROM transaction WHERE account_id = ?" + dateQuery+ " ORDER BY date DESC";
 
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {

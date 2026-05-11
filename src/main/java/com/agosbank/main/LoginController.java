@@ -72,20 +72,20 @@ public class LoginController {
     }
 
     private void showError(String message) {
-    errorMessageLabel.setText(message);
-    
-    errorCard.setVisible(true);
-    errorCard.setManaged(true); 
-    
-    errorCard.toFront(); 
-    errorCard.setMouseTransparent(false); 
-    
-    // Animation
-    FadeTransition ft = new FadeTransition(Duration.millis(300), errorCard);
-    ft.setFromValue(0.0);
-    ft.setToValue(1.0);
-    ft.play();
-    }
+        errorMessageLabel.setText(message);
+        
+        errorCard.setVisible(true);
+        errorCard.setManaged(true); 
+        
+        errorCard.toFront(); 
+        errorCard.setMouseTransparent(false); 
+        
+        // Animation
+        FadeTransition ft = new FadeTransition(Duration.millis(300), errorCard);
+        ft.setFromValue(0.0);
+        ft.setToValue(1.0);
+        ft.play();
+        }
 
     @FXML
     private void closeErrorCard() {

@@ -2,8 +2,10 @@ C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\database\DBConnect
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\App.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\CashInController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\DashboardController.java
+C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\HistoryController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\LoginController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\Main.java
+C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\QRController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\ReceiptController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\RegisterController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\SendMoneyController.java
@@ -12,3 +14,5 @@ C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\models\Transaction
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\models\User.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\services\AuthService.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\services\TransactionService.java
+C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\utils\QRGenerator.java
+C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\utils\SceneSwitcher.java

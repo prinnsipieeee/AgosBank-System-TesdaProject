@@ -24,8 +24,8 @@ public class ReceiptController {
     @FXML private Label dateLabel;
     @FXML private Label recipientValue;
 
-    @FXML private Label recipientKey; 
-    @FXML private Button downloadBtn;
+    @FXML private Label recipientKey;
+    @FXML private Button downloadBtn; 
     @FXML private VBox receiptContainer;
 
     public void setData(String type, double amount, String recipient) {

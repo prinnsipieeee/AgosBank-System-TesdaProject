@@ -16,7 +16,7 @@ public class App extends Application {
         
         stage.setTitle("AgosBank - Login");
         stage.setScene(scene);
-        stage.setResizable(false); // Para hindi ma-stretch ang mobile design natin
+        stage.setResizable(false);
         stage.show();
     }
 

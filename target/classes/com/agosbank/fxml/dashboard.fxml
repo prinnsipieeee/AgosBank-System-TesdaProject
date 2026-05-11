@@ -126,7 +126,7 @@
             </VBox>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="360.0" spacing="50.0" styleClass="bottom-nav" stylesheets="@style.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="50.0">
+                  <VBox fx:id="navHome" alignment="CENTER" prefHeight="200.0" prefWidth="50.0" styleClass="nav-item">
                      <children>
                         <ImageView fitHeight="28.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -138,29 +138,32 @@
                         </ImageView>
                      </children>
                   </VBox>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="50.0">
+                  <VBox fx:id="navHistory" alignment="CENTER" onMouseClicked="#handleNavigation" prefHeight="200.0" prefWidth="50.0" styleClass="nav-item">
                      <children>
                         <ImageView fitHeight="28.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../assets/history.png" />
                            </image>
                            <VBox.margin>
-                              <Insets right="15.0" />
+                              <Insets />
                            </VBox.margin>
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
                      </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
                   </VBox>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="50.0">
+                  <VBox fx:id="navQR" alignment="CENTER" onMouseClicked="#handleNavigation" prefHeight="200.0" prefWidth="50.0" styleClass="nav-item">
                      <children>
                         <ImageView fitHeight="28.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../assets/qr.png" />
                            </image>
                            <VBox.margin>
-                              <Insets right="20.0" />
+                              <Insets />
                            </VBox.margin>
                            <cursor>
                               <Cursor fx:constant="HAND" />
@@ -168,11 +171,11 @@
                         </ImageView>
                      </children>
                   </VBox>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="50.0">
+                  <VBox fx:id="navProfile" alignment="CENTER" onMouseClicked="#handleNavigation" prefHeight="200.0" prefWidth="50.0" styleClass="nav-item">
                      <children>
                         <ImageView fitHeight="28.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                            <VBox.margin>
-                              <Insets right="10.0" />
+                              <Insets />
                            </VBox.margin>
                            <image>
                               <Image url="@../assets/account.png" />
@@ -183,7 +186,7 @@
                         </ImageView>
                      </children>
                      <HBox.margin>
-                        <Insets left="-20.0" />
+                        <Insets />
                      </HBox.margin>
                   </VBox>
                </children></HBox>

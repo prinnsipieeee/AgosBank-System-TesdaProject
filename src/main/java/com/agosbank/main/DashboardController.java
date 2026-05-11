@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import com.agosbank.models.Transaction;
 import com.agosbank.services.TransactionService;
+import com.agosbank.utils.SceneSwitcher;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -174,5 +176,21 @@ public class DashboardController implements Initializable {
 
         item.getChildren().addAll(icon, details, spacer, amountLabel);
         return item;
+    }
+
+
+    @FXML
+    private void handleNavigation(MouseEvent event) {
+        // Kuhanin natin kung anong VBox ang pinindot
+        VBox source = (VBox) event.getSource();
+        String id = source.getId();
+
+        switch (id) {
+            case "navHome" -> System.out.println();
+            case "navHistory" -> SceneSwitcher.switchScene(source, "history.fxml");
+            case "navQR" -> SceneSwitcher.switchScene(source, "qrcode.fxml");
+            case "navProfile" -> System.out.println();
+            default -> System.out.println();
+        }
     }
 }

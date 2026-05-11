@@ -1,7 +1,10 @@
 com\agosbank\models\User.class
+com\agosbank\main\HistoryController.class
 com\agosbank\services\TransactionService.class
 com\agosbank\main\SendMoneyController.class
+com\agosbank\main\QRController.class
 com\agosbank\services\AuthService.class
+com\agosbank\utils\QRGenerator.class
 com\agosbank\main\CashInController$1.class
 com\agosbank\main\UserSession.class
 com\agosbank\models\Transaction.class
@@ -10,6 +13,7 @@ com\agosbank\database\DBConnection.class
 com\agosbank\main\App.class
 com\agosbank\main\LoginController.class
 com\agosbank\main\Main.class
+com\agosbank\utils\SceneSwitcher.class
 com\agosbank\main\CashInController.class
 com\agosbank\main\DashboardController.class
 com\agosbank\main\RegisterController.class
