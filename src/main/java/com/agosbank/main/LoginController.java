@@ -57,6 +57,9 @@ public class LoginController {
                 UserSession.getInstance().setFullName(loggedInUser.getFullName());
                 UserSession.getInstance().setAccountId(String.valueOf(loggedInUser.getAccountId()));
                 UserSession.getInstance().setBalance(loggedInUser.getBalance());
+                UserSession.getInstance().setPhoneNumber(loggedInUser.getPhoneNumber());
+                UserSession.getInstance().setEmail(loggedInUser.getEmail());
+                UserSession.getInstance().setMemberSince(loggedInUser.getMemberSince());
 
                 System.out.println("Login Success! Welcome, " + UserSession.getInstance().getFullName());
 

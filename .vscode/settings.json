@@ -5,5 +5,8 @@
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
     ],
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    
+    "css.lint.unknownProperties": "ignore",
+    "scss.lint.unknownProperties": "ignore"
 }

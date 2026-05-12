@@ -580,3 +580,94 @@
 .qr-amount-button:hover {
     -fx-background-color: rgba(255, 255, 255, 0.3);
 }
+
+.account-text {
+    -fx-text-fill: #00D094; /* O kung anong kulay ang nasa Figma mo */
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-font-family: "System"; /* Pwede mong palitan ng "Arial" o "Segoe UI" */
+}
+
+.account-texts {
+    -fx-text-fill: #e7eced; /* O kung anong kulay ang nasa Figma mo */
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-font-family: "System";
+}
+
+.account-details {
+    -fx-font-size: 20px;
+    -fx-text-fill: #e7eced;
+    -fx-font-family: "System";
+    -fx-text-weight: bold;
+}
+.account-name {
+    -fx-font-size: 20px;
+    -fx-text-fill: white;
+    -fx-font-family: "Times New Roman";
+    -fx-text-weight: bold;
+}
+
+.account-verified {
+    -fx-background-color: rgba(0, 255, 204, 0.1); 
+    -fx-text-fill: #00FFCC; 
+    -fx-padding: 4 12 4 12;
+    -fx-background-radius: 15; 
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-graphic-text-gap: 6;
+}
+
+.accounts-label {
+    -fx-text-fill: #e7eced;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Times New Roman";
+    -fx-alignment: center;
+
+    -fx-background-color: rgba(0, 255, 204, 0.1); 
+    -fx-text-fill: #00FFCC; 
+    -fx-padding: 5 13 4 12;
+    -fx-background-radius: 15; 
+}
+
+.account-labels {
+    -fx-font-size: 10px;
+    -fx-text-fill: white;
+    -fx-font-family: "Arial";
+    -fx-text-weight: bold;
+    -fx-padding: 5 13 4 12;
+}
+
+.account-button {
+    -fx-background-color: #00D094;
+    -fx-background-radius: 12;
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-font-family: "Times New Roman";
+
+    -fx-pref-height: 30;      
+    -fx-pref-width: 250;      
+    -fx-font-size: 15px;        
+    -fx-padding: 0 20;
+}
+
+.account-buttons {
+    -fx-background-color: #00D094;
+    -fx-background-radius: 12;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-font-family: "Times New Roman";
+
+    -fx-pref-height: 30;      
+    -fx-pref-width: 250;      
+    -fx-font-size: 15px;        
+    -fx-padding: 0 20;
+}
+
+.account-button:hover,
+.account-buttons:hover {
+    -fx-background-color: #2c3e50;
+}

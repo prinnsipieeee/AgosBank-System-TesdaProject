@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 
 import com.agosbank.database.DBConnection;
 import com.agosbank.models.User;
@@ -73,6 +74,7 @@ public class AuthService{
 
     public User loginUser(String phoneNumber, String pinCode){
         String sql = "SELECT * FROM USERS WHERE phone_number = ? AND pin_code = ?";
+        
 
         System.out.println("DEBUG: Connecting to Database...");
 
@@ -86,13 +88,18 @@ public class AuthService{
                 ResultSet rs = p.executeQuery();
                 
                 if(rs.next()){
+                    java.sql.Timestamp timestamp = rs.getTimestamp("created_at");
+                    String formattedDate = new SimpleDateFormat("MMMM yyyy").format(timestamp);
+                    
                     return new User(
                         rs.getInt("id"),
                         rs.getString("full_name"),
                         rs.getString("account_id"),
                         rs.getString("phone_number"),
+                        rs.getString("email"),
                         rs.getString("pin_code"),
-                        rs.getDouble("balance")
+                        rs.getDouble("balance"),
+                        formattedDate
                     );
                 } 
             } catch (SQLException e) {

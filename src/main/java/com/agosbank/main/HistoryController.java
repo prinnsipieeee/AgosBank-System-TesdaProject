@@ -155,7 +155,7 @@ public class HistoryController {
             case "navHome" -> SceneSwitcher.switchScene(source, "dashboard.fxml");
             case "navHistory" -> System.out.println("Already In History");
             case "navQR" -> SceneSwitcher.switchScene(source, "qrcode.fxml");
-            case "navProfile" -> System.out.println();
+            case "navProfile" -> SceneSwitcher.switchScene(source, "account.fxml");
             default -> System.out.println();
         }
     }

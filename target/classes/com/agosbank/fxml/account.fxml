@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxWidth="360.0" prefHeight="640.0" prefWidth="360.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agosbank.main.AccountController">
+   <children>
+      <VBox alignment="CENTER" layoutY="10.0" maxHeight="-Infinity" maxWidth="360.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="360.0" spacing="20.0" stylesheets="@style.css">
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </padding>
+         <children>
+            <ImageView fitHeight="113.0" fitWidth="96.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../assets/logo.png" />
+               </image>
+               <VBox.margin>
+                  <Insets bottom="-50.0" left="-180.0" top="-80.0" />
+               </VBox.margin>
+            </ImageView>
+            <Label prefHeight="73.0" prefWidth="137.0" styleClass="account-texts" text="AGOS">
+               <VBox.margin>
+                  <Insets bottom="-20.0" left="40.0" right="20.0" top="-50.0" />
+               </VBox.margin>
+            </Label>
+            <Label prefHeight="51.0" prefWidth="102.0" styleClass="account-text" text="BANK">
+               <VBox.margin>
+                  <Insets left="150.0" top="-62.0" />
+               </VBox.margin>
+            </Label>
+            <VBox alignment="CENTER" prefWidth="350.0" spacing="10.0">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="-20.0" />
+               </VBox.margin>
+               <children>
+                  <Label styleClass="account-details" text="ACCOUNT DETAILS" textFill="WHITE" />
+                  <ImageView fitHeight="126.0" fitWidth="115.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assets/profile.png" />
+                     </image>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </ImageView>
+                  <Label fx:id="lblFullName" styleClass="account-name" text="dasdasdasdasdas" textFill="WHITE" />
+                  <Label contentDisplay="RIGHT" styleClass="account-verified" text="VERIFIED MEMBER" textFill="WHITE">
+                     <graphic>
+                        <Label alignment="CENTER" contentDisplay="RIGHT" text="✓" textFill="#00ffcc" />
+                     </graphic></Label>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="401.0">
+               <children>
+                  <Label fx:id="lblAccountIdValue" prefHeight="23.0" prefWidth="439.0" styleClass="accounts-label" text="Label" textFill="WHITE" />
+                  <Label styleClass="account-labels" text="ACCOUNT ID" textFill="WHITE" />
+                  <Label fx:id="lblMobileValue" prefHeight="23.0" prefWidth="409.0" styleClass="accounts-label" text="Label" textFill="WHITE" />
+                  <Label styleClass="account-labels" text="ACCOUNT MOBILE NUMBER" textFill="WHITE" />
+                  <Label fx:id="lblMemberSinceValue" prefHeight="23.0" prefWidth="372.0" styleClass="accounts-label" text="Label" textFill="WHITE" />
+                  <Label styleClass="account-labels" text="MEMBER SINCE" textFill="WHITE" />
+                  <Label fx:id="lblEmailValue" prefHeight="23.0" prefWidth="366.0" styleClass="accounts-label" text="Label" textFill="WHITE" />
+                  <Label styleClass="account-labels" text="EMAIL ADDRESS" textFill="WHITE">
+                     <VBox.margin>
+                        <Insets bottom="-20.0" />
+                     </VBox.margin></Label>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="-35.0" top="-20.0" />
+               </VBox.margin>
+            </VBox>
+            <VBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <Button mnemonicParsing="false" styleClass="account-buttons" text="CHANGE PASSWORD">
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#handleLogout" styleClass="account-button" text="LOG OUT">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets top="30.0" />
+               </VBox.margin>
+            </VBox>
+         </children>
+      </VBox>
+      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="360.0" spacing="50.0" styleClass="bottom-nav" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <VBox fx:id="navHome" alignment="CENTER" onMouseClicked="#handleNavigation" prefHeight="200.0" prefWidth="50.0" styleClass="nav-item">
+               <children>
+                  <ImageView fitHeight="28.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assets/home.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </VBox>
+            <VBox fx:id="navHistory" alignment="CENTER" onMouseClicked="#handleNavigation" prefHeight="200.0" prefWidth="50.0" styleClass="nav-item">
+               <children>
+                  <ImageView fitHeight="28.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assets/history.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </VBox>
+            <VBox fx:id="navQR" alignment="CENTER" onMouseClicked="#handleNavigation" prefHeight="200.0" prefWidth="50.0" styleClass="nav-item">
+               <children>
+                  <ImageView fitHeight="28.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assets/qr.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </VBox>
+            <VBox fx:id="navAccount" alignment="CENTER" onMouseClicked="#handleNavigation" prefHeight="200.0" prefWidth="50.0" styleClass="nav-item">
+               <children>
+                  <ImageView fitHeight="28.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assets/account.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

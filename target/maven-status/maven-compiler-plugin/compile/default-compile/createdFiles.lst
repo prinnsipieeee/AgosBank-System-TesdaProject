@@ -12,6 +12,7 @@ com\agosbank\main\ReceiptController.class
 com\agosbank\database\DBConnection.class
 com\agosbank\main\App.class
 com\agosbank\main\LoginController.class
+com\agosbank\main\AccountController.class
 com\agosbank\main\Main.class
 com\agosbank\utils\SceneSwitcher.class
 com\agosbank\main\CashInController.class

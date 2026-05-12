@@ -189,7 +189,7 @@ public class DashboardController implements Initializable {
             case "navHome" -> System.out.println();
             case "navHistory" -> SceneSwitcher.switchScene(source, "history.fxml");
             case "navQR" -> SceneSwitcher.switchScene(source, "qrcode.fxml");
-            case "navProfile" -> System.out.println();
+            case "navProfile" -> SceneSwitcher.switchScene(source, "account.fxml");
             default -> System.out.println();
         }
     }

@@ -10,7 +10,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="360.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agosbank.main.QRController">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
@@ -44,9 +43,9 @@
             </Label>
             <VBox alignment="CENTER" layoutX="40.0" layoutY="175.0" maxHeight="450.0" maxWidth="323.0" prefHeight="323.0" prefWidth="283.0" spacing="20.0" styleClass="qr-main-card">
                <children>
-                  <ImageView fitHeight="216.0" fitWidth="234.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgQRCode" fitHeight="216.0" fitWidth="234.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../assets/apple-icon.png" />
+                        <Image url="@../assets/qr-2.png" />
                      </image>
                      <VBox.margin>
                         <Insets left="5.0" top="-10.0" />
@@ -57,14 +56,14 @@
                         <Insets top="-10.0" />
                      </VBox.margin>
                   </Label>
-                  <Label fx:id="lblAccountID" styleClass="qr-name-label" text="Label">
+                  <Label fx:id="lblphoneNumber" styleClass="qr-name-label" text="Label">
                      <VBox.margin>
                         <Insets bottom="-10.0" />
                      </VBox.margin>
                   </Label>
                </children>
             </VBox>
-            <Button fx:id="imgQRCode" layoutX="124.0" layoutY="528.0" mnemonicParsing="false" onAction="#handleDownload" styleClass="qr-amount-button" text="DOWNLOAD" />
+            <Button layoutX="124.0" layoutY="528.0" mnemonicParsing="false" onAction="#handleDownload" styleClass="qr-amount-button" text="DOWNLOAD" />
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="360.0" spacing="50.0" styleClass="bottom-nav" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
                   <VBox fx:id="navHome" alignment="CENTER" onMouseClicked="#handleNavigation" prefHeight="200.0" prefWidth="50.0" styleClass="nav-item">
