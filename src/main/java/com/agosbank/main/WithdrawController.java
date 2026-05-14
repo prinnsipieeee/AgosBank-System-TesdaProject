@@ -26,7 +26,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class CashInController {
+public class WithdrawController {
 
     @FXML private Label availableBalanceLabel;
     @FXML private TextField recipientAccountField;
@@ -35,7 +35,7 @@ public class CashInController {
     @FXML private Button confirmBtn;
     @FXML private ProgressIndicator loadingIndicator;
 
-    @FXML private VBox notificationOverlay;
+    @FXML private VBox notificationOverlay; 
     @FXML private Label notificationLabel;
     @FXML private Button notificationBtn;
 
@@ -44,12 +44,12 @@ public class CashInController {
     private double lastAmount;
     private String lastAccId;
     private double currentBalance = 0.0;
-
     private final String currentUserAcc = UserSession.getInstance().getAccountId();
+
     private final TransactionService transactionService = new TransactionService();
 
     @FXML
-    public void initialize() {
+    public void initialize(){
         amountField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 amountField.setText(newValue.replaceAll("[^\\d]", ""));
@@ -60,21 +60,25 @@ public class CashInController {
         });
 
         refreshBalanceDisplay();
-        if (notificationOverlay != null) {
+
+        if (notificationOverlay != null){
             notificationOverlay.setVisible(false);
             notificationOverlay.setManaged(false);
             receiptLink.setVisible(false);
             receiptLink.setManaged(false);
         }
+
         recipientAccountField.setText(UserSession.getInstance().getAccountId());
         sourceNameField.setText(UserSession.getInstance().getFullName());
+
         setupValidationListeners();
         checkFormValidity();
+
         amountField.setAlignment(Pos.CENTER);
         recipientAccountField.setAlignment(Pos.CENTER);
     }
 
-    private void refreshBalanceDisplay() {
+    private void refreshBalanceDisplay(){
         try (Connection conn = DBConnection.getConnection()) {
             String query = "SELECT balance FROM users WHERE account_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -85,16 +89,15 @@ public class CashInController {
                 availableBalanceLabel.setText("Available Balance: ₱ " + String.format("%,.2f", currentBalance));
             }
         } catch (SQLException e) {
-            showNotification("Unable to retrieve your account balance. Please try again.", "FETCH FAILED", false);
-            System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private void setupValidationListeners() {
+    private void setupValidationListeners(){
         recipientAccountField.textProperty().addListener((obs, oldVal, newVal) -> {
-            updateStyle(recipientAccountField, newVal.matches("AGOS-\\d{4}"));
+            updateStyle(recipientAccountField, newVal.matches("AGOS-\\\\d{4}"));
             checkFormValidity();
         });
+
         amountField.textProperty().addListener((obs, oldVal, newVal) -> {
             try {
                 double val = Double.parseDouble(newVal);
@@ -127,14 +130,14 @@ public class CashInController {
 
         receiptLink.setVisible(showReceipt);
         receiptLink.setManaged(showReceipt);
-        
+
         notificationOverlay.setVisible(true);
         notificationOverlay.setManaged(true);
         notificationOverlay.toFront();
     }
 
     @FXML
-    private void closeNotification() {
+    private void closeNotification(){
         notificationOverlay.setVisible(false);
         notificationOverlay.setManaged(false);
 
@@ -142,64 +145,76 @@ public class CashInController {
         receiptLink.setManaged(false);
     }
 
-    @FXML
-    @SuppressWarnings("unused")
-    private void handleConfirmCashIn() {
-        String targetAcc = recipientAccountField.getText();
-        String amountText = amountField.getText().trim();
-        String source = sourceNameField.getText();
+   @FXML
+   @SuppressWarnings("unused")
+    private void handleConfirmWithdraw() {
+        String amountText = amountField.getText();
+        
+        UserSession session = UserSession.getInstance();
+        double currentBalance = session.getBalance();
+        String userAccId = session.getAccountId();
+        String sourceName = session.getFullName();
 
         try {
-            double incomingAmount = Double.parseDouble(amountText);
-            double currentBalance = UserSession.getInstance().getBalance();
-            double maxLimit = 300000.0;
-
-            if ((currentBalance + incomingAmount) > maxLimit) {
-                double allowableAmount = maxLimit - currentBalance;
-                showNotification("Transaction exceeds the wallet limit. You can only add up to ₱" + String.format("%,.2f", allowableAmount) + ".", "LIMIT EXCEEDED", false);
-            return;
+            double amount = Double.parseDouble(amountText);
+            if (amount <= 0) {
+                showNotification("Please enter a valid amount.", "TRY AGAIN", false);
+                return;
             }
-            executeTransaction(targetAcc, Double.parseDouble(amountText), source);
+
+            if (amount > currentBalance) {
+                showNotification("Insufficient balance to proceed with this transaction. Your available balance is ₱" + String.format("%,.2f", currentBalance) + ".", "INSUFFICIENT FUNDS", false);
+                return;
+            }
+            executeWithdrawal(userAccId, amount, sourceName);
+
         } catch (NumberFormatException e) {
-            showNotification("The amount entered contains invalid characters. Please use numbers only.", "FORMAT ERROR", false);
+            showNotification("Invalid amount format.", "OK", false);
         }
     }
 
-    private void executeTransaction(String targetAcc, double amount, String source) {
-        confirmBtn.setVisible(false); 
+    private void executeWithdrawal(String accountId, double amount, String sourceName) {
+        confirmBtn.setVisible(false);
         loadingIndicator.setVisible(true);
 
-        Task<Boolean> depositTask = new Task<>() {
-            @Override
-            protected Boolean call() throws Exception {
-                Thread.sleep(1500);
-                return transactionService.deposit(targetAcc, amount, source);
-            }
-        };
+            Task<Boolean> withdrawTask = new Task<>() {
+                @Override
+                protected Boolean call() throws Exception {
+                    Thread.sleep(1500);
+                    return transactionService.withdraw(accountId, amount, sourceName);
+                }
+            };
 
-        depositTask.setOnSucceeded(e -> {
-            loadingIndicator.setVisible(false);
-            confirmBtn.setVisible(true); 
-            
-            if (depositTask.getValue()) {
-                this.lastAmount = amount;
-                this.lastAccId = targetAcc;
-                UserSession.getInstance().setBalance(UserSession.getInstance().getBalance() + amount);
-                refreshBalanceDisplay(); 
-                showNotification("Transaction successful! ₱" + String.format("%,.2f", amount) + " has been successfully credited to your account.", "SUCCESS", true);
-            } else {
-                showNotification("Transaction failed. The provided Account ID or Name could not be verified.", "INVALID ACCOUNT", false);
-            }
-        });
+            withdrawTask.setOnSucceeded(e -> {
+                loadingIndicator.setVisible(false);
+                confirmBtn.setVisible(true);
 
-        depositTask.setOnFailed(e -> {
-            loadingIndicator.setVisible(false);
-            confirmBtn.setVisible(true);
-            showNotification("Unable to connect to the banking server. Please check your network connection and try again.", "CONNECTION TIMEOUT", false);
-            depositTask.getException().printStackTrace();
-        });
-        new Thread(depositTask).start();
-    }
+                if (withdrawTask.getValue()) {
+                    this.lastAmount = amount;
+                    this.lastAccId = accountId;
+
+                    UserSession session = UserSession.getInstance();
+                    session.setBalance(session.getBalance() - amount);
+                    
+                    refreshBalanceDisplay(); 
+
+                    showNotification("Withdrawal successful! ₱" + String.format("%,.2f", amount) + " has been deducted.", "DONE", true);
+                    
+                    amountField.clear();
+                } else {
+                    showNotification("Withdrawal failed. Please check your database connection.", "TRY AGAIN", false);
+                }
+            });
+
+            withdrawTask.setOnFailed(e -> {
+                loadingIndicator.setVisible(false);
+                confirmBtn.setVisible(true);
+                showNotification("Unable to connect to the banking server. Please check your network connection and try again.", "CONNECTION TIMEOUT", false);
+                withdrawTask.getException().printStackTrace();
+            });
+
+            new Thread(withdrawTask).start();
+        }
 
     @FXML
     @SuppressWarnings("unused")
@@ -213,10 +228,8 @@ public class CashInController {
             stage.centerOnScreen();
             stage.show();
         } catch (IOException | NullPointerException e) {
-            showNotification("Error Loading of the page", "SYSTEM ERROR", false);
-            System.err.println("Error: " + e.getMessage());
-            }
         }
+    }
 
     @FXML
     @SuppressWarnings("unused")
@@ -226,7 +239,6 @@ public class CashInController {
         String cleanAmount = amountText.replace("P", "").replace("₱", "").replace(",", "").trim();
         amountField.setText(cleanAmount);
     }
-
     @FXML
     @SuppressWarnings("unused")
     private void handleOpenReceipt() {
@@ -241,14 +253,13 @@ public class CashInController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agosbank/fxml/receipt.fxml"));
             Parent root = loader.load();
             ReceiptController controller = loader.getController();
-            controller.setData("Cash In", amount, accId);
+            controller.setData("Withdraw", amount, accId);
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("AgosBank - Official Receipt");
             stage.show();
         } catch (IOException e) {
-            showNotification("Error Loading of the page", "SYSTEM ERROR", false);
-            System.err.println("Error: " + e.getMessage());
         }
     }
 }
+

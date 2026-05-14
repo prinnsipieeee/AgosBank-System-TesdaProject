@@ -12,12 +12,9 @@ import com.agosbank.models.Transaction;
 ;
 
 public class TransactionService{
-
     public boolean deposit(String accountId, double amount, String sourceName) {
-        // 1. SQL Queries base sa screenshot mo
         String updateBalanceSQL = "UPDATE users SET balance = balance + ? WHERE account_id = ?";
         
-        // Ginagamit ang 'name' para sa source at 'account_ID' para sa recipient
         String logTransactionSQL = "INSERT INTO transaction (amount, transaction_type, sender_name, account_ID) VALUES (?, 'CASH IN', ?, ?)";
 
         try (Connection conn = DBConnection.getConnection()) {
@@ -28,7 +25,6 @@ public class TransactionService{
             try (PreparedStatement updstmt = conn.prepareStatement(updateBalanceSQL);
                 PreparedStatement logstmt = conn.prepareStatement(logTransactionSQL)) {
                 
-                // Step A: Update Balance sa 'users' table
                 updstmt.setDouble(1, amount);
                 updstmt.setString(2, accountId); 
                 int rowsAffected = updstmt.executeUpdate();
@@ -38,10 +34,9 @@ public class TransactionService{
                     return false; 
                 }
 
-                // Step B: Log the Transaction sa 'transaction' table (Match sa DB mo)
-                logstmt.setDouble(1, amount);           // amount
-                logstmt.setString(2, sourceName);       // name (yung deposit source)
-                logstmt.setString(3, accountId);        // account_ID
+                logstmt.setDouble(1, amount);           
+                logstmt.setString(2, sourceName);       
+                logstmt.setString(3, accountId);        
                 logstmt.executeUpdate();
 
                 conn.commit(); 
@@ -159,7 +154,7 @@ public class TransactionService{
             case "THIS YEAR":
                 dateQuery = " AND YEAR(date) = YEAR(CURDATE())";
                 break;
-            default: // "ALL"
+            default: 
                 dateQuery = ""; 
         }
 
@@ -188,9 +183,9 @@ public class TransactionService{
         return list;
     }
 
-    public boolean withdraw(String accountId, double amount){
-        String updateSQL = "UPDATE users SET balance = balance - ? WHERE id = ? AND BALANCE >= ?";
-        String logSQL = "INSERT INTO transaction (amount, transaction_type, account_id) VALUES (?, 'WITHDRAW', ?)";
+    public boolean withdraw(String accountId, double amount, String sourceName){
+        String updateSQL = "UPDATE users SET balance = balance - ? WHERE account_id = ? AND BALANCE >= ?";
+        String logSQL = "INSERT INTO transaction (amount, transaction_type, sender_name, account_id) VALUES (?, 'WITHDRAW', ?, ?)";
 
         try(Connection conn = DBConnection.getConnection()){
             conn.setAutoCommit(false);
@@ -204,11 +199,14 @@ public class TransactionService{
                 int affected = updatestmt.executeUpdate();
 
                 if(affected == 0){
-                    throw new SQLException("Insuficcient Balance or User not Found.");
+                    conn.rollback();
+                    System.out.println("DEBUG: Affected rows is 0. Check accountId or Balance.");
+                    return false;
                 }
 
                 logstmt.setDouble(1, amount);
-                logstmt.setString(2, accountId);
+                logstmt.setString(2, sourceName);
+                logstmt.setString(3, accountId);
                 logstmt.executeUpdate();
 
                 conn.commit();
@@ -225,7 +223,6 @@ public class TransactionService{
 
     public double getUserBalance(String accountId) {
         double balance = 0.0;
-        // Query base sa account_id na nasa database mo
         String query = "SELECT balance FROM users WHERE account_id = ?";
 
         try (Connection conn = DBConnection.getConnection();

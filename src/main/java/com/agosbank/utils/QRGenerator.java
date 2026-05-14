@@ -9,11 +9,9 @@ import java.io.ByteArrayOutputStream;
 import javax.imageio.ImageIO;
 
 public class QRGenerator {
-    // Sa QRGenerator.java
     public static byte[] getQRCodeBytes(String data, int width, int height) throws Exception {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, width, height);
-        
         BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", os);

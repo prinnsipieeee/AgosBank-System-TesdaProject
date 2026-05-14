@@ -330,19 +330,13 @@
 
 /* Ang background box ng notification */
 .notification-box {
-    -fx-background-color: rgba(13, 27, 42, 0.95); /* Dark Blue with Transparency */
-    -fx-background-radius: 15px;
-    -fx-border-color: #00d2ff; /* Agos Blue */
-    -fx-border-width: 2px;
-    -fx-border-radius: 15px;
-    -fx-padding: 30px;
-    -fx-max-width: 300px;
-    -fx-max-height: 200px;
-    -fx-alignment: center;
-    -fx-spacing: 20px;
+    -fx-background-color: #1e232c; 
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);
 }
 
-/* Style para sa mensahe sa loob */
 .notification-label {
     -fx-text-fill: white;
     -fx-font-family: "Segoe UI";
@@ -363,7 +357,7 @@
 
 /* Ang "TRY AGAIN" o "OK" button */
 .notification-button {
-    -fx-background-color: #00d2ff;
+    -fx-background-color: #00d9a5;
     -fx-text-fill: #0d1b2a;
     -fx-font-weight: bold;
     -fx-background-radius: 5px;
@@ -372,7 +366,7 @@
 }
 
 .notification-button2 {
-    -fx-background-color: rgb(178, 4, 4);
+    -fx-background-color: #ff4d4d;
     -fx-text-fill: #0d1b2a;
     -fx-font-weight: bold;
     -fx-background-radius: 5px;
@@ -625,10 +619,9 @@
     -fx-font-family: "Times New Roman";
     -fx-alignment: center;
 
-    -fx-background-color: rgba(0, 255, 204, 0.1); 
-    -fx-text-fill: #00FFCC; 
+    -fx-background-color: rgba(100, 255, 204, 0.1); 
     -fx-padding: 5 13 4 12;
-    -fx-background-radius: 15; 
+    -fx-background-radius: 10; 
 }
 
 .account-labels {
@@ -670,4 +663,35 @@
 .account-button:hover,
 .account-buttons:hover {
     -fx-background-color: #2c3e50;
+}
+
+/* Base Style */
+.notif-toast {
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 0);
+}
+
+/* Success Mode */
+.notif-success {
+    -fx-background-color: #048b2d; /* AgosBank Green */
+}
+
+/* Error Mode */
+.notif-error {
+    -fx-background-color: #ff4d4d; /* Danger Red */
+}
+
+.notif-text {
+    -fx-text-fill: white;
+    -fx-font-family: "Times New Roman";
+    -fx-font-size: 30px;
+    -ms-flex-align: center;
+}
+
+.notif-texts {
+    -fx-text-fill: white;
+    -fx-font-family: "Times New Roman";
+    -fx-font-size: 15px;
+    -ms-flex-align: center;
 }

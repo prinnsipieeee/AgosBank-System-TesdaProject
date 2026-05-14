@@ -1,17 +1,13 @@
 package com.agosbank.main;
 
-/**
- * UserSession serves as a global state for the logged-in user.
- * Updated to support Account Details view.
- */
 public class UserSession {
     private static UserSession instance;
     
     private String fullName;
     private String accountId;
-    private String phoneNumber; // Dagdag para sa Account Details
-    private String email;       // Dagdag para sa Account Details
-    private String memberSince; // Dagdag para sa Account Details
+    private String phoneNumber;
+    private String email;       
+    private String memberSince; 
     private double balance; 
 
     private UserSession() {}
@@ -73,10 +69,6 @@ public class UserSession {
         return balance;
     }
 
-    /**
-     * Resets the session data upon logout.
-     * Mahalaga ito para walang maiwang data sa susunod na mag-login.
-     */
     public void cleanUserSession() {
         fullName = null;
         accountId = null;

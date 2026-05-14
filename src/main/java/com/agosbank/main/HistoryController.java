@@ -38,10 +38,8 @@ public class HistoryController {
 
     @FXML
     public void initialize() {
-        // Default: Ipakita lahat ng history pag-load ng page
         loadHistory("ALL");
 
-        // Listener para sa ToggleGroup - para automatic mag-filter pagka-click
         dateFilterGroup.selectedToggleProperty().addListener((observable, oldToggle, newToggle) -> {
             if (newToggle != null) {
                 ToggleButton selectedBtn = (ToggleButton) newToggle;
@@ -83,12 +81,10 @@ public class HistoryController {
             icon.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 18px; -fx-font-weight: bold;");
         }
 
-        // 2. Transaction Details (Type + Date)
         VBox details = new VBox(2);
         Label typeLabel = new Label(transaction.getTransactionType());
         typeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
         
-        // Formatting the date para mas malinis
         String formattedDate = transaction.getDate().toLocalDateTime().format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, hh:mm a"));
         Label dateLabel = new Label(formattedDate);
         dateLabel.setStyle("-fx-text-fill: #95a5a6; -fx-font-size: 10px;");
@@ -97,7 +93,6 @@ public class HistoryController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // 3. Amount
         Label amountLabel = new Label(String.format("₱%,.2f", transaction.getAmount()));
         amountLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
 
@@ -109,14 +104,12 @@ public class HistoryController {
         lblDetType.setText(transaction.getTransactionType());
         lblDetAmount.setText(String.format("₱%,.2f", transaction.getAmount()));
         lblDetRef.setText(transaction.getAccountId());
-        
-        // Check kung sino ang papangalanan (Sender o Receiver)
+ 
         String displayName = transaction.getTransactionType().equals("CASH IN") ? transaction.getSenderName() : transaction.getReceiverName();
         lblDetName.setText(displayName);
         
         lblDetDate.setText(transaction.getDate().toString());
 
-        // 2. Show the overlay
         detailsOverlay.setVisible(true);
 
         FadeTransition fade = new FadeTransition(Duration.millis(300), detailsOverlay);
@@ -147,7 +140,6 @@ public class HistoryController {
 
     @FXML
     private void handleNavigation(MouseEvent event) {
-        // Kuhanin natin kung anong VBox ang pinindot
         VBox source = (VBox) event.getSource();
         String id = source.getId();
 

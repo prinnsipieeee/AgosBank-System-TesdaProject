@@ -45,6 +45,7 @@ public class ReceiptController {
             recipientValue.setText(recipient);
         }
     }
+
     private void hideRecipientRow(boolean shouldHide) {
         boolean isVisible = !shouldHide;
         
@@ -58,23 +59,18 @@ public class ReceiptController {
     @FXML
     private void handleDownload() {
         System.out.println("Processing receipt download...");
-
-        // 1. GUMAWA NG SNAPSHOT (Ang "Picture" ng resibo)
         WritableImage snapshot = receiptContainer.snapshot(new SnapshotParameters(), null);
 
-        // 2. MAGBUKAS NG FILE CHOOSER (Para professional ang dating)
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Receipt");
         fileChooser.setInitialFileName("AgosBank_Receipt_" + System.currentTimeMillis() + ".png");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Image", "*.png"));
 
-        // Kunin ang window para sa dialog
         Window stage = downloadBtn.getScene().getWindow();
         File file = fileChooser.showSaveDialog(stage);
 
         if (file != null) {
             try {
-                // 3. I-SAVE ANG IMAGE GAMIT ANG IMAGEIO
                 java.awt.image.BufferedImage bufferedImage = new java.awt.image.BufferedImage(
                         (int) snapshot.getWidth(),
                         (int) snapshot.getHeight(),
@@ -86,10 +82,7 @@ public class ReceiptController {
                     }
                 }
                 javax.imageio.ImageIO.write(bufferedImage, "png", file);
-
                 System.out.println("Receipt saved successfully to: " + file.getAbsolutePath());
-                
-                // I-close ang window pagkatapos i-save (Optional)
                 ((Stage) stage).close();
 
             } catch (IOException e) {

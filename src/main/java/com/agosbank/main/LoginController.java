@@ -14,6 +14,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -41,6 +42,7 @@ public class LoginController {
         }
     }
     @FXML
+    @SuppressWarnings("unused")
     private void handleLogin() {
         String user = usernameField.getText().trim();
         String pass = passwordField.getText().trim();
@@ -69,8 +71,7 @@ public class LoginController {
                 showError("Authentication failed. Please verify your phone number and PIN.");
             }
         } catch (Exception e) {
-            e.printStackTrace(); // Para makita mo ang actual error sa console
-            showError("Database Error: Check mo kung naka-ON ang XAMPP.");
+            showError("Database Connection Error: Unable to establish a secure link with the local server.");
         }
     }
 
@@ -91,6 +92,7 @@ public class LoginController {
         }
 
     @FXML
+    @SuppressWarnings("unused")
     private void closeErrorCard() {
         System.out.println("DEBUG: Close button clicked!");
         errorCard.setVisible(false);
@@ -99,26 +101,39 @@ public class LoginController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleCreateAccount() {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/agosbank/fxml/register.fxml"));
             Stage stage = (Stage) createAccountLink.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
     @FXML
+    @SuppressWarnings("unused")
+    private void forgotPin() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/agosbank/fxml/security.fxml"));
+            Stage stage = (Stage) createAccountLink.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+        }
+    }
+    
+    @FXML
+    @SuppressWarnings("unused")
     private void togglePasswordVisibility() {
         if (passwordField.isVisible()) {
             visiblePasswordField.setText(passwordField.getText());
             visiblePasswordField.setVisible(true);
-            passwordField.setVisible(false);
-            // Dito mo rin pwedeng palitan yung icon ng "Eye Close"
+            eyeIcon.setImage(new Image(getClass().getResourceAsStream("/com/agosbank/images/eye_open.png")));
         } else {
             passwordField.setText(visiblePasswordField.getText());
             passwordField.setVisible(true);
+            visiblePasswordField.setVisible(false);
+            eyeIcon.setImage(new Image(getClass().getResourceAsStream("/com/agosbank/images/eye_closed.png")));
             visiblePasswordField.setVisible(false);
         }
     }
@@ -133,7 +148,6 @@ public class LoginController {
             stage.show();
             
         } catch (IOException e) {
-            e.printStackTrace();
             showError("Navigation Error: Hindi mahanap ang dashboard.fxml.");
         }
     }

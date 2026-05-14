@@ -9,8 +9,10 @@ C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\Main.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\QRController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\ReceiptController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\RegisterController.java
+C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\SecurityController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\SendMoneyController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\UserSession.java
+C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\main\WithdrawController.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\models\Transaction.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\models\User.java
 C:\Users\Prince\Documents\AgosBank\src\main\java\com\agosbank\services\AuthService.java

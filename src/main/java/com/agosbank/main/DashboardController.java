@@ -34,7 +34,7 @@ public class DashboardController implements Initializable {
     @FXML private ImageView toggleIcon; 
     @FXML private VBox dashboardHistoryContainer;
 
-    private TransactionService transactionService = new TransactionService();
+    private final TransactionService transactionService = new TransactionService();
     private double currentBalance = 0.0;
     private boolean isBalanceShown = false;
 
@@ -61,6 +61,7 @@ public class DashboardController implements Initializable {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void toggleBalanceVisibility() {
         isBalanceShown = !isBalanceShown;
         updateBalanceDisplay();
@@ -74,54 +75,53 @@ public class DashboardController implements Initializable {
         }
     }
 
-    // 5. Placeholders para sa mga Buttons
     @FXML
+    @SuppressWarnings("unused")
     private void handleCashIn(ActionEvent event) {
         try {
-            // 1. I-load ang cash_in.fxml mula sa resources folder mo
-            // Base sa structure mo: /com/agosbank/fxml/cash_in.fxml
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agosbank/fxml/cash_in.fxml"));
             Parent root = loader.load();
-
-            // 2. Kunin ang kasalukuyang Stage (Window) gamit ang button na pinindot
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            // 3. I-set ang bagong Scene
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.centerOnScreen(); // Para laging nasa gitna ang window
+            stage.centerOnScreen();
             stage.show();
-
             System.out.println("Navigating to Cash In... Success!");
-            
         } catch (IOException e) {
             System.err.println("Error loading Cash In screen: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     @FXML
+    @SuppressWarnings("unused")
+    private void handleWithdraw(MouseEvent event) {
+        try {
+            String path = "/com/agosbank/fxml/withdraw.fxml";
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.centerOnScreen();
+            stage.show();
+        } catch (IOException | NullPointerException e) {            
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    @SuppressWarnings("unused")
     private void handleSendMoney(ActionEvent event) {
          try {
-            // 1. I-load ang cash_in.fxml mula sa resources folder mo
-            // Base sa structure mo: /com/agosbank/fxml/cash_in.fxml
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agosbank/fxml/send_money.fxml"));
             Parent root = loader.load();
-
-            // 2. Kunin ang kasalukuyang Stage (Window) gamit ang button na pinindot
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            // 3. I-set ang bagong Scene
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.centerOnScreen(); // Para laging nasa gitna ang window
+            stage.centerOnScreen();
             stage.show();
-
             System.out.println("Navigating to Send Money... Success!");
-            
         } catch (IOException e) {
             System.err.println("Error loading Send Money screen: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -145,8 +145,6 @@ public class DashboardController implements Initializable {
         item.setPadding(new Insets(12));
         item.setAlignment(Pos.CENTER_LEFT);
         item.setStyle("-fx-background-color: #1e2d3e; -fx-background-radius: 12; -fx-margin: 5;");
-
-        // 1. Icon Label (Ang "Executive" Symbol)
         Label icon = new Label();
         if (transaction.getTransactionType().equals("CASH IN")) {
             icon.setText("↙"); // O kaya "➕"
@@ -155,13 +153,10 @@ public class DashboardController implements Initializable {
             icon.setText("↗"); // O kaya "➖"
             icon.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 18px; -fx-font-weight: bold;");
         }
-
-        // 2. Transaction Details (Type + Date)
         VBox details = new VBox(2);
         Label typeLabel = new Label(transaction.getTransactionType());
         typeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
-        
-        // Formatting the date para mas malinis
+
         String formattedDate = transaction.getDate().toLocalDateTime().format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, hh:mm a"));
         Label dateLabel = new Label(formattedDate);
         dateLabel.setStyle("-fx-text-fill: #95a5a6; -fx-font-size: 10px;");
@@ -170,7 +165,7 @@ public class DashboardController implements Initializable {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // 3. Amount
+   
         Label amountLabel = new Label(String.format("₱%,.2f", transaction.getAmount()));
         amountLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
 
@@ -178,10 +173,9 @@ public class DashboardController implements Initializable {
         return item;
     }
 
-
     @FXML
+    @SuppressWarnings("unused")
     private void handleNavigation(MouseEvent event) {
-        // Kuhanin natin kung anong VBox ang pinindot
         VBox source = (VBox) event.getSource();
         String id = source.getId();
 
@@ -191,6 +185,22 @@ public class DashboardController implements Initializable {
             case "navQR" -> SceneSwitcher.switchScene(source, "qrcode.fxml");
             case "navProfile" -> SceneSwitcher.switchScene(source, "account.fxml");
             default -> System.out.println();
+        }
+    }
+
+    @FXML
+    @SuppressWarnings("unused")
+    private void accountDetails(MouseEvent event) {
+        try {
+            String path = "/com/agosbank/fxml/account.fxml";
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.centerOnScreen();
+            stage.show();
+        } catch (IOException | NullPointerException e) {
+           System.err.println("Error Navigation account.fxml");
         }
     }
 }

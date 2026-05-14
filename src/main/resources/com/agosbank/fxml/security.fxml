@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane stylesheets="@style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agosbank.main.SecurityController">
+   <children>
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="360.0" stylesheets="@style.css">
+         <children>
+            <VBox alignment="CENTER" prefHeight="150.0" prefWidth="360.0">
+               <children>
+                  <ImageView fitHeight="174.0" fitWidth="183.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assets/logo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </VBox>
+            <StackPane prefHeight="640.0" prefWidth="360.0">
+               <children>
+                  <VBox fx:id="paneForgotPin" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" visible="false">
+                     <children>
+                        <Label prefHeight="73.0" prefWidth="193.0" styleClass="cash_in" text="FORGOT PIN?" textFill="WHITE">
+                           <VBox.margin>
+                              <Insets top="80.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="71.0" prefWidth="337.0" styleClass="new" text="Enter your Registered Mobile Number and Email Address to verify your identity and Request a Temporary PIN" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                           <VBox.margin>
+                              <Insets top="-20.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="17.0" prefWidth="338.0" styleClass="new" text="Mobile Number" />
+                        <TextField fx:id="mobileField" promptText="09*********" styleClass="input-group" />
+                        <Label prefHeight="17.0" prefWidth="332.0" styleClass="new" text="Email Address" />
+                        <TextField fx:id="emailField" promptText="johndoe@gmail.com" styleClass="input-group" />
+                        <Button mnemonicParsing="false" onAction="#handleRequestVerification" prefHeight="34.0" styleClass="account-buttons" text="VERIFY">
+                           <VBox.margin>
+                              <Insets bottom="-50.0" top="20.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#closeSecuritySettings" styleClass="account-buttons" text="LOG IN">
+                           <VBox.margin>
+                              <Insets top="50.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="paneCreateNewPin" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" visible="false">
+                     <children>
+                        <Label styleClass="cash_in" text="CREATE NEW PIN" textFill="WHITE">
+                           <VBox.margin>
+                              <Insets top="100.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="345.0" styleClass="new" text="Set your new 4-digit PIN to securely access your account" textAlignment="CENTER" />
+                        <Label prefHeight="18.0" prefWidth="338.0" styleClass="new" text="Enter Old Pin" />
+                        <PasswordField styleClass="input-group" />
+                        <Label prefHeight="17.0" prefWidth="333.0" styleClass="enter" text="Enter New Pin" />
+                        <StackPane>
+                           <children>
+                              <PasswordField fx:id="newPinField" promptText="XXXX" styleClass="input-group" />
+                              <TextField fx:id="visiblePinField" styleClass="input-group" visible="false" />
+                              <ImageView fitHeight="25.0" fitWidth="20.0" onMouseClicked="#togglePinVisibility" pickOnBounds="true" preserveRatio="true" StackPane.alignment="TOP_RIGHT">
+                                 <StackPane.margin>
+                                    <Insets right="20.0" top="15.0" />
+                                 </StackPane.margin>
+                                 <image>
+                                    <Image url="@../assets/eye.png" />
+                                 </image>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <Label prefHeight="17.0" prefWidth="340.0" styleClass="enter" text="Confirm New Pin" />
+                        <StackPane>
+                           <children>
+                              <PasswordField fx:id="confirmPinField" promptText="XXXX" styleClass="input-group" />
+                              <TextField fx:id="visibleConfirmField" styleClass="input-group" visible="false" />
+                           </children>
+                        </StackPane>
+                        <Button mnemonicParsing="false" onAction="#handleUpdatePin" styleClass="account-buttons" text="UPDATE PIN">
+                           <VBox.margin>
+                              <Insets bottom="-40.0" top="40.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#closeSecuritySettings" styleClass="account-buttons" text="LOG IN">
+                           <VBox.margin>
+                              <Insets bottom="-20.0" top="50.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+            <VBox prefHeight="50.0" prefWidth="50.0">
+               <children>
+                  <HBox prefHeight="50.0" prefWidth="100.0">
+                     <children>
+                        <ImageView fx:id="backbutton" fitHeight="50.0" fitWidth="50.0" onMouseClicked="#backToAccount" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../assets/images__3_-removebg-preview.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </VBox>
+         </children>
+      </AnchorPane>
+      <VBox fx:id="confirmationOverlay" alignment="CENTER" maxHeight="265.0" maxWidth="320.0" spacing="20.0" styleClass="notification-box" visible="false">
+         <children>
+            <Label alignment="CENTER" prefHeight="59.0" prefWidth="290.0" styleClass="new" text="Do you want to Update your Pin?" textAlignment="CENTER" wrapText="true" />
+            <Button mnemonicParsing="false" onAction="#onConfirmYes" prefHeight="25.0" prefWidth="200.0" styleClass="notification-button" text="YES">
+               <VBox.margin>
+                  <Insets bottom="-10.0" />
+               </VBox.margin>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#onConfirmCancel" prefWidth="200.0" styleClass="notification-button2" text="CANCEL">
+               <VBox.margin>
+                  <Insets bottom="-20.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+      <VBox fx:id="notifBox" alignment="CENTER" maxHeight="200.0" maxWidth="330.0" spacing="10.0" styleClass="notif-toast" visible="false">
+         <children>
+            <Label fx:id="notifTitle" styleClass="notif-text" text="Label" />
+            <Label fx:id="notifMessage" alignment="CENTER" prefHeight="116.0" prefWidth="299.0" styleClass="notif-texts" text="Label" textAlignment="CENTER" wrapText="true" />
+         </children>
+      </VBox>
+   </children>
+</StackPane>

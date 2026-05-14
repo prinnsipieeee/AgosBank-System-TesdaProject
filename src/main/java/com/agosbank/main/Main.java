@@ -13,7 +13,6 @@ public class Main {
 
     public static void main(String[] args) {
         while (true) {
-            // Imbes na currentUser, tinitignan natin kung may accountId sa Session
             if (UserSession.getInstance().getAccountId() == null) {
                 showWelcomeMenu();
             } else {
@@ -69,7 +68,7 @@ public class Main {
                 System.out.println("Transaction history feature is currently unavailable.");
             }
             case "5" -> {
-                UserSession.getInstance().cleanUserSession(); // I-reset ang session data
+                UserSession.getInstance().cleanUserSession();
                 System.out.println("Logged out successfully.");
             }
             default -> System.out.println("Option not available yet.");
@@ -86,7 +85,6 @@ public class Main {
         User user = as.loginUser(phone, pin);
 
         if (user != null) {
-            // DITO NA NATIN ILILIPAT SA SESSION ANG DATA MULA SA DATABASE
             UserSession.getInstance().setAccountId(user.getAccountId());
             UserSession.getInstance().setFullName(user.getFullName());
             UserSession.getInstance().setBalance(user.getBalance()); 
@@ -135,7 +133,6 @@ public class Main {
         boolean success = ts.deposit(accountId, amount, sourceName);
 
         if (success) {
-            // I-update lang ang session kung sariling account ang hinulugan
             if (accountId.equals(UserSession.getInstance().getAccountId())) {
                 UserSession.getInstance().setBalance(UserSession.getInstance().getBalance() + amount);
             }
@@ -158,7 +155,6 @@ public class Main {
             return;
         }
 
-        // Gamitin ang UserSession.getAccountId() bilang sender
         boolean success = ts.sendMoney(UserSession.getInstance().getAccountId(), receiverId, amount);
 
         if (success) {
@@ -179,7 +175,7 @@ public class Main {
             return;
         }
 
-        boolean success = ts.withdraw(UserSession.getInstance().getAccountId(), amount);
+        boolean success = ts.withdraw(UserSession.getInstance().getAccountId(), amount, UserSession.getInstance().getFullName());
 
         if (success) {
             UserSession.getInstance().setBalance(UserSession.getInstance().getBalance() - amount);

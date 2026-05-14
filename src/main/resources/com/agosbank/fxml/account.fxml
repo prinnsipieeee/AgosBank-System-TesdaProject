@@ -40,12 +40,12 @@
                </VBox.margin>
                <children>
                   <Label styleClass="account-details" text="ACCOUNT DETAILS" textFill="WHITE" />
-                  <ImageView fitHeight="126.0" fitWidth="115.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="106.0" fitWidth="104.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../assets/profile.png" />
+                        <Image url="@../assets/prof.png" />
                      </image>
                      <VBox.margin>
-                        <Insets />
+                        <Insets top="-10.0" />
                      </VBox.margin>
                   </ImageView>
                   <Label fx:id="lblFullName" styleClass="account-name" text="dasdasdasdasdas" textFill="WHITE" />
@@ -75,12 +75,12 @@
             </VBox>
             <VBox alignment="CENTER" spacing="5.0">
                <children>
-                  <Button mnemonicParsing="false" styleClass="account-buttons" text="CHANGE PASSWORD">
+                  <Button mnemonicParsing="false" onAction="#ChangePassword" styleClass="account-buttons" text="CHANGE PASSWORD">
                      <VBox.margin>
                         <Insets top="10.0" />
                      </VBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#handleLogout" styleClass="account-button" text="LOG OUT">
+                  <Button mnemonicParsing="false" onAction="#handleLogout" prefHeight="28.0" styleClass="account-button" text="LOG OUT">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>

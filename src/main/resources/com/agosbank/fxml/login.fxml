@@ -84,7 +84,7 @@
             </HBox>
             <HBox layoutX="60.0" layoutY="570.0" prefHeight="29.0" prefWidth="243.0">
                <children>
-                  <Hyperlink prefHeight="24.0" prefWidth="102.0" stylesheets="@style.css" text="Forgot PIN" textFill="WHITE" />
+                  <Hyperlink onAction="#forgotPin" prefHeight="24.0" prefWidth="102.0" stylesheets="@style.css" text="Forgot PIN" textFill="WHITE" />
                   <Region prefHeight="29.0" prefWidth="95.0" />
                   <Hyperlink fx:id="createAccountLink" onAction="#handleCreateAccount" prefHeight="24.0" prefWidth="119.0" stylesheets="@style.css" text="Create Account" textFill="WHITE" />
                </children>

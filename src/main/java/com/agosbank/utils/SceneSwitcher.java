@@ -17,7 +17,6 @@ public class SceneSwitcher {
             stage.show();
         } catch (IOException e) {
             System.err.println("Navigation Error: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

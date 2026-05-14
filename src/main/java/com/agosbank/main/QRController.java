@@ -1,7 +1,7 @@
 package com.agosbank.main;
 
 import java.io.ByteArrayInputStream;
-import java.io.File; // Siguraduhin na tama ang path nito
+import java.io.File;
 import java.nio.file.Files;
 
 import com.agosbank.utils.QRGenerator;
@@ -23,25 +23,20 @@ public class QRController {
 
     @FXML
     public void initialize() {
-        // 1. Get Data from Session
-
         UserSession session = UserSession.getInstance();
 
         String fullName = UserSession.getInstance().getFullName();
         String phoneNumber = UserSession.getInstance().getPhoneNumber();
 
         System.out.println("DEBUG: Session Phone: " + session.getPhoneNumber());
-
-        // 2. Set Labels (Executive Formatting)
+    
         if (fullName != null) lblUserName.setText(fullName.toUpperCase());
         if (phoneNumber != null) lblphoneNumber.setText(maskPhoneNumber(phoneNumber));
 
-        // 3. Generate and Display QR
         loadQRCode(phoneNumber);
     }
     private void loadQRCode(String phoneNumber) {
         try {
-            // "AGOS-" prefix para sa internal tracking
             byte[] qrBytes = QRGenerator.getQRCodeBytes("AGOS-" + phoneNumber, 300, 300);
             Image qrImage = new Image(new ByteArrayInputStream(qrBytes));
             imgQRCode.setImage(qrImage);
@@ -52,7 +47,6 @@ public class QRController {
 
     private String maskPhoneNumber(String phone) {
         if (phone == null || phone.length() < 10) return phone;
-        // Format: 09*****1234
         return phone.substring(0, 2) + "*****" + phone.substring(phone.length() - 4);
     }
 
@@ -81,7 +75,6 @@ public class QRController {
 
     @FXML
     private void handleNavigation(MouseEvent event) {
-        // Kuhanin natin kung anong VBox ang pinindot
         VBox source = (VBox) event.getSource();
         String id = source.getId();
 

@@ -47,6 +47,15 @@ public class SendMoneyController {
 
     @FXML
     public void initialize() {
+        amountField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                amountField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+            if (newValue.startsWith("0")) {
+                amountField.setText(newValue.substring(1));
+            }
+        });
+        
         loadCurrentBalance();
         amountField.setAlignment(javafx.geometry.Pos.CENTER);
     }
@@ -61,12 +70,12 @@ public class SendMoneyController {
                 currentBalance = rs.getDouble("balance");
                 balanceLabel.setText("Available Balance: ₱ " + String.format("%,.2f", currentBalance));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            } catch (SQLException e) {
         }
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleSendMoney() {
         System.out.println("Validation Started...");
         
@@ -75,24 +84,24 @@ public class SendMoneyController {
         String mobileNumInput = mobileField.getText().trim();
         String amountInput = amountField.getText().trim();
 
-        // 1. UI Validation
         if (recipientInput.isEmpty() || recipientName.isEmpty() || amountInput.isEmpty() || mobileNumInput.isEmpty()) {
             showNotification("Please fill in all required fields.", false);
             return;
         }
 
+        if(recipientInput.equals(currentUserAcc)) {
+            showNotification("Transaction restricted. You cannot send money to your own account using this feature.", false);
+            return;
+        }
+
         try {
             double amount = Double.parseDouble(amountInput);
-
-            // 2. Business Logic Validation
             if (amount < 100) { 
                 showNotification("Min ₱100.00", false); return; }
             if (amount > currentBalance) { 
                 showNotification("Insufficient balance", false); return; }
-            
             sendBtn.setVisible(false);
             loadingIndicator.setVisible(true);
-
             PauseTransition pause = new PauseTransition(Duration.seconds(1.2));
             pause.setOnFinished(event -> {
 
@@ -103,19 +112,16 @@ public class SendMoneyController {
             loadingIndicator.setVisible(false);
 
             if (!isValid) {
-                showNotification("Check recipient details. Account Number, Mobile Number or Name of Recipient is mismatch.", false);
+                showNotification("The recipient information provided does not match our records. Please review the details and try again.", false);
                 sendBtn.setVisible(true);
                 return; 
             }
 
-            // 3. I-store ang data at Ipakita ang Confirmation Overlay
             this.pendingAmount = amount;
             this.pendingRecipient = recipientInput;
             this.pendingRecipientName = recipientName;
 
-            confirmMsgLabel.setText("Are you sure you want to send\n₱" + 
-                                   String.format("%,.2f", amount) + " to " + recipientInput + "?");
-
+            confirmMsgLabel.setText("Are you sure you want to send\n₱" + String.format("%,.2f", amount) + " to " + recipientInput + "?");
             confirmationOverlay.setVisible(true);
         });
         pause.play();
@@ -124,22 +130,17 @@ public class SendMoneyController {
         }
     }
 
-    // ETO YUNG TATAWAGIN NG "CONFIRM" BUTTON SA VBOX MO
     @FXML
+    @SuppressWarnings("unused")
     private void processTransfer() {
-        confirmationOverlay.setVisible(false); // Itago na ang confirmation
-        
+        confirmationOverlay.setVisible(false); 
         String senderAccId = UserSession.getInstance().getAccountId();
-        
-        // TAWAG SA BACKEND (TransactionService)
         TransactionService transService = new TransactionService();
         
-        // Ginamit natin yung 'pendingRecipient' na nag-match sa 'receiverAccId' ng backend mo
         boolean isSuccess = transService.sendMoney(senderAccId, pendingRecipient, pendingAmount);
 
         if (isSuccess) {
-            showNotification(String.format("Transfer Successful!\n₱%,.2f has been sent\nto %s", 
-                                   pendingAmount, pendingRecipient ), true);
+            showNotification(String.format("Your transfer of ₱%,.2f to %s has been processed successfully.", pendingAmount, pendingRecipient), true);
             loadCurrentBalance();
             recipientAccField.clear();
             amountField.clear();
@@ -147,6 +148,7 @@ public class SendMoneyController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void cancelTransfer() {
         confirmationOverlay.setVisible(false);
         sendBtn.setVisible(true);
@@ -177,12 +179,14 @@ public class SendMoneyController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void closeNotification() {
         notificationOverlay.setVisible(false);
         sendBtn.setVisible(true);
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleGenerateReceipt() {
         openReceipt(this.pendingAmount, this.pendingRecipient);
     }
@@ -192,20 +196,17 @@ public class SendMoneyController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agosbank/fxml/receipt.fxml"));
             Parent root = loader.load();
             ReceiptController controller = loader.getController();
-            
-            // Pass the data to receipt
             controller.setData("Send Money", amount, accId);
-
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("AgosBank - Official Receipt");
             stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | NullPointerException e) {
         }
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void backToDashboard(MouseEvent event) {
         try {
             String path = "/com/agosbank/fxml/dashboard.fxml";
@@ -216,7 +217,6 @@ public class SendMoneyController {
             stage.centerOnScreen();
             stage.show();
         } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
         }
     }
 }

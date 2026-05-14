@@ -1,7 +1,6 @@
 package com.agosbank.services;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,35 +10,40 @@ import com.agosbank.database.DBConnection;
 import com.agosbank.models.User;
 
 public class AuthService{
-    private Connection getConnection() throws SQLException {
-        String url = System.getenv("DB_URL");
-        String user = System.getenv("DB_USER");
-        String password = System.getenv("DB_PASS");
+    public boolean isIdentityTaken(String mobile, String email, String fullName) {
+        String sql = "SELECT 1 FROM users WHERE phone_number = ? OR email = ? OR full_name = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, mobile);
+            pstmt.setString(2, email);
+            pstmt.setString(3, fullName);
 
-        if (url == null || url.isBlank()) {
-            throw new SQLException("Database URL not configured. Set DB_URL environment variable.");
-        }
-
-        return DriverManager.getConnection(url, user, password);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next(); 
+            }
+        } catch (SQLException e) {
+            System.err.println("Registration Check Error: " + e.getMessage());
+            return false;
+        } 
     }
 
-    public boolean isAccountExists(String mobile, String email) {
-        String checkSql = "SELECT count(*) FROM users WHERE phone_number = ? OR email = ?";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(checkSql)){
+    public boolean verifyForgotPinIdentity(String mobile, String email) {
+        String sql = "SELECT 1 FROM users WHERE phone_number = ? AND email = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, mobile);
             pstmt.setString(2, email);
 
-            ResultSet rs = pstmt.executeQuery();
-            if(rs.next()){
-                return rs.getInt(1) > 0;
-                }
-            } catch (SQLException e){
-                e.printStackTrace();
-            } 
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Forgot PIN Verification Error: " + e.getMessage());
             return false;
-        }
+        } 
+    }
 
     public boolean registerUser(String fullName, String accountId, String phoneNumber, String email, String pinCode) {
         
@@ -48,15 +52,15 @@ public class AuthService{
             return false;
         }
 
-        if (isAccountExists(phoneNumber, email)){
-            System.out.println("Registration Failed: Mobile or Email already in use.");
+        if (isIdentityTaken(phoneNumber, email, fullName)){
+            System.out.println("Registration Failed: Name, Email, or Mobile Number is already registered.");
             return false;
         }
 
         String sql = "INSERT INTO users (full_name, account_id, phone_number, email, pin_code, balance) VALUES (?, ?, ?, ?, ?, 0.00)";
         
         try(Connection conn = DBConnection.getConnection();
-            PreparedStatement p = conn.prepareStatement(sql)){
+            PreparedStatement p = conn.prepareStatement(sql)){  
                 
             p.setString(1, fullName);
             p.setString(2, accountId);
@@ -107,5 +111,54 @@ public class AuthService{
             }
             return null;
         }
-}
+    
+    public boolean changePin(String accountId, String oldPin, String newPin){
+        String query = "UPDATE users SET pin_code = ? WHERE account_id = ? AND pin_code = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+        PreparedStatement p = conn.prepareStatement(query)) {
+
+            p.setString(1, newPin);
+            p.setString(2, accountId);
+            p.setString(3, oldPin);
+
+            int affectedRows = p.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public boolean resetPin(String accountId, String newPin) {
+        String query = "UPDATE users SET pin_code = ? WHERE account_id = ?";
+
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement p = conn.prepareStatement(query)) {
+            
+            p.setString(1, newPin);
+            p.setString(2, accountId);
+
+            int affectedRows = p.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e){
+            return false;
+        }
+    }
+
+    public boolean updatePinByMobile(String mobile, String newPin) {
+        String query = "UPDATE users SET pin_code = ? WHERE phone_number = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            pstmt.setString(1, newPin);
+            pstmt.setString(2, mobile);
+            
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+}   
 
