@@ -1,6 +1,7 @@
 com\agosbank\main\HistoryController.class
 com\agosbank\services\TransactionService.class
 com\agosbank\services\AuthService.class
+com\agosbank\main\MainLauncher.class
 com\agosbank\main\App.class
 com\agosbank\main\SecurityController.class
 com\agosbank\main\RegisterController.class
